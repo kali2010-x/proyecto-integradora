@@ -1,0 +1,15 @@
+# --- Driver I2C esclavo versión 2 (API i2c_slave_write + callbacks) ---
+CONFIG_I2C_ENABLE_SLAVE_DRIVER_VERSION_2=y
+# --- FreeRTOS a 1 ms por tick (esperas cortas en el enlace) ---
+CONFIG_FREERTOS_HZ=1000
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+# --- wolfSSL: configuración del ejemplo cliente + ML-KEM ---
+CONFIG_WOLFSSL_EXAMPLE_NAME_TLS_CLIENT=y
+CONFIG_ESP_WOLFSSL_ENABLE_MLKEM=y
+CONFIG_NEWLIB_NANO_FORMAT=n
+# --- Particiones: la app con wolfSSL + OpenSSL-compat es grande ---
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions_singleapp_large.csv"
+# --- Watchdog: no reiniciar durante handshakes largos ---
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=n
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU1=n

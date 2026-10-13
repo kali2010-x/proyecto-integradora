@@ -1,0 +1,17 @@
+# Claves privadas: NUNCA al repositorio
+*.key
+*.pem.key
+# Entornos y compilados
+venv/
+__pycache__/
+*.pyc
+esp32/firmware/build/
+esp32/firmware/managed_components/
+esp32/firmware/sdkconfig
+esp32/firmware/sdkconfig.old
+esp32/firmware/main/cert_servidor.h
+sim/esclavo_sim
+# Datos crudos pesados: se suben comprimidos (.gz) - ver guía semana 10
+data/raw/*_potencia.csv
+data/raw/reposo_*.csv
+certs/*.key

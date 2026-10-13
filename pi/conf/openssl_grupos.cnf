@@ -1,0 +1,12 @@
+# Configuración de OpenSSL para el servidor TLS del proyecto.
+# Se activa con:  export OPENSSL_CONF=$HOME/proyecto-kyber-rpi/pi/conf/openssl_grupos.cnf
+# El servidor acepta el grupo híbrido y el clásico; el CLIENTE (ESP32) decide cuál ofrece
+# en cada corrida, así no hay HelloRetryRequest y se controla el factor desde el maestro.
+openssl_conf = openssl_init
+[openssl_init]
+ssl_conf = ssl_sect
+[ssl_sect]
+system_default = system_default_sect
+[system_default_sect]
+MinProtocol = TLSv1.3
+Groups = X25519MLKEM768:X25519

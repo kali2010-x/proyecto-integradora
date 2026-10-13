@@ -1,0 +1,5 @@
+# Proyecto ESP-IDF: nodo sensor (esclavo I2C + cliente TLS 1.3)
+cmake_minimum_required(VERSION 3.16)
+# wolfSSL se busca en la variable de entorno WOLFSSL_ROOT (ver guía de la semana 2)
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(nodo_tls_i2c)

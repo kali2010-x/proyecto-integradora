@@ -1,0 +1,263 @@
+#!/usr/bin/env python3
+"""
+Runner integrado: cripto + energía (INA219) + CPU/RAM + temperatura.
+Semana 10 - Proyecto Kyber vs ECDH en Raspberry Pi 4.
+"""
+
+import time
+import csv
+import datetime
+import threading
+import queue
+import subprocess
+import os
+import sys
+
+import psutil
+import oqs
+from cryptography.hazmat.primitives.asymmetric import ec
+
+# --- Hardware INA219 (ajusta al pin I2C de tu montaje de Semana 4) ---
+import board
+import busio
+from adafruit_ina219 import INA219
+
+i2c = busio.I2C(board.SCL, board.SDA)
+ina219 = INA219(i2c)
+
+
+# ============================================================
+# CONFIGURACIÓN
+# ============================================================
+ALGORITMO_KYBER = "ML-KEM-768"
+CURVA_ECDH = ec.SECP256R1()
+NOMBRE_ECDH = "ECDH-P256"
+
+# 2000 operaciones por bloque garantizan que al menos una muestra del sensor
+# (que lee cada 10 ms) caiga dentro de la ventana de medición.
+OPERACIONES_POR_BLOQUE = 2000
+INTERVALO_SENSOR_S = 0.01       # 10 ms — NO cambiar (definido en Semana 5)
+RUTA_CSV = "../data/runner_prueba.csv"
+
+# Instancia global de psutil (para que cpu_percent tenga referencia continua)
+PROCESO = psutil.Process()
+
+
+# ============================================================
+# HILO DEL SENSOR
+# ============================================================
+muestras = queue.Queue()
+detener = threading.Event()
+
+
+def leer_ina219():
+    """Devuelve (v_bus_V, corriente_mA, potencia_mW)."""
+    v = ina219.bus_voltage          # V
+    i = ina219.current              # mA
+    p = ina219.power                # mW
+    return v, i, p
+
+
+def hilo_sensor():
+    while not detener.is_set():
+        try:
+            t = time.perf_counter_ns()
+            v, i_mA, p_mW = leer_ina219()
+            muestras.put((t, v, i_mA, p_mW))
+        except Exception as e:
+            print(f"[sensor] error: {e}", file=sys.stderr)
+        time.sleep(INTERVALO_SENSOR_S)
+
+
+# ============================================================
+# UTILIDADES DE MEDICIÓN
+# ============================================================
+def leer_temperatura():
+    raw = subprocess.check_output(["vcgencmd", "measure_temp"]).decode()
+    return float(raw.replace("temp=", "").replace("'C\n", ""))
+
+
+def leer_throttled():
+    raw = subprocess.check_output(["vcgencmd", "get_throttled"]).decode().strip()
+    return raw != "throttled=0x0"
+
+
+def muestras_en_ventana(t_inicio, t_fin):
+    """Devuelve lista de potencias (mW) que cayeron en [t_inicio, t_fin]."""
+    temp = list(muestras.queue)
+    return [p for (t, v, i, p) in temp if t_inicio <= t <= t_fin]
+
+
+# ============================================================
+# SETUP + RUN DE CADA OPERACIÓN
+# ============================================================
+
+# --- Kyber KeyGen ---
+def kyber_keygen_setup():
+    return None
+
+def kyber_keygen_run(_):
+    with oqs.KeyEncapsulation(ALGORITMO_KYBER) as receptor:
+        receptor.generate_keypair()
+
+
+# --- Kyber Encaps ---
+def kyber_encaps_setup():
+    with oqs.KeyEncapsulation(ALGORITMO_KYBER) as receptor:
+        pub = receptor.generate_keypair()
+    return pub
+
+def kyber_encaps_run(pub):
+    with oqs.KeyEncapsulation(ALGORITMO_KYBER) as emisor:
+        emisor.encap_secret(pub)
+
+
+# --- Kyber Decaps ---
+def kyber_decaps_setup():
+    receptor = oqs.KeyEncapsulation(ALGORITMO_KYBER)
+    pub = receptor.generate_keypair()
+    with oqs.KeyEncapsulation(ALGORITMO_KYBER) as emisor:
+        ct, _ = emisor.encap_secret(pub)
+    return (receptor, ct)
+
+def kyber_decaps_run(estado):
+    receptor, ct = estado
+    receptor.decap_secret(ct)
+
+
+# --- ECDH KeyGen ---
+def ecdh_keygen_setup():
+    return None
+
+def ecdh_keygen_run(_):
+    ec.generate_private_key(CURVA_ECDH)
+
+
+# --- ECDH Agreement ---
+def ecdh_agree_setup():
+    a = ec.generate_private_key(CURVA_ECDH)
+    b = ec.generate_private_key(CURVA_ECDH)
+    return (a, b.public_key())
+
+def ecdh_agree_run(estado):
+    a, pub_b = estado
+    a.exchange(ec.ECDH(), pub_b)
+
+
+# ============================================================
+# BLOQUE MEDIDO
+# ============================================================
+def medir_bloque(nombre_algoritmo, nombre_operacion, funcion,
+                 n=OPERACIONES_POR_BLOQUE):
+    """
+    Ejecuta `funcion` n veces seguidas, mide tiempo total y energía
+    promedio del bloque. Devuelve un dict con la fila del CSV.
+    """
+    # Estado previo (para las operaciones que lo requieran)
+    estado = funcion["setup"]()
+
+    t_inicio = time.perf_counter_ns()
+    for _ in range(n):
+        funcion["run"](estado)
+    t_fin = time.perf_counter_ns()
+
+    duracion_total = t_fin - t_inicio
+    duracion_media = duracion_total // n
+
+    # Ventana de energía
+    potencias = muestras_en_ventana(t_inicio, t_fin)
+    if potencias:
+        potencia_prom = sum(potencias) / len(potencias)
+        energia_mJ = potencia_prom * (duracion_total / 1e9)  # mW * s = mJ
+    else:
+        potencia_prom = None
+        energia_mJ = None
+
+    # CPU / RAM / temp / throttled
+    cpu_pct = PROCESO.cpu_percent(interval=None) or 0.0
+    ram_mb = PROCESO.memory_info().rss / (1024 * 1024)
+    temp_c = leer_temperatura()
+    throttled = leer_throttled()
+
+    return {
+        "algoritmo": nombre_algoritmo,
+        "operacion": nombre_operacion,
+        "duracion_ns": duracion_media,
+        "muestras_energia": len(potencias),
+        "potencia_prom_mW": potencia_prom,
+        "energia_mJ": energia_mJ,
+        "cpu_pct": cpu_pct,
+        "ram_mb": ram_mb,
+        "temp_c": temp_c,
+        "throttled": throttled,
+    }
+
+
+# ============================================================
+# PRUEBA PEQUEÑA (10 filas)
+# ============================================================
+def main():
+    os.makedirs(os.path.dirname(RUTA_CSV), exist_ok=True)
+
+    tareas = [
+        ("ML-KEM-768", "KeyGen",
+         {"setup": kyber_keygen_setup, "run": kyber_keygen_run}, 2),
+
+        ("ML-KEM-768", "Encaps",
+         {"setup": kyber_encaps_setup, "run": kyber_encaps_run}, 2),
+
+        ("ML-KEM-768", "Decaps",
+         {"setup": kyber_decaps_setup, "run": kyber_decaps_run}, 2),
+
+        ("ECDH-P256", "KeyGen_A",
+         {"setup": ecdh_keygen_setup, "run": ecdh_keygen_run}, 2),
+
+        ("ECDH-P256", "Agreement_A",
+         {"setup": ecdh_agree_setup, "run": ecdh_agree_run}, 2),
+    ]
+
+    # Arrancar hilo del sensor
+    hilo = threading.Thread(target=hilo_sensor, daemon=True)
+    hilo.start()
+    time.sleep(0.5)  # dar tiempo a acumular muestras iniciales
+
+    # Calibrar psutil: la primera llamada siempre devuelve 0.0
+    # porque no tiene una referencia previa. Hacemos una de "basura",
+    # esperamos, y luego las siguientes ya dan valores reales.
+    PROCESO.cpu_percent(interval=None)
+    time.sleep(0.1)
+    PROCESO.cpu_percent(interval=None)
+
+    # Encabezado del CSV
+    campos = ["run_id", "batch_id", "algoritmo", "operacion",
+              "orden_en_lote", "duracion_ns", "muestras_energia",
+              "potencia_prom_mW", "energia_mJ", "cpu_pct", "ram_mb",
+              "temp_c", "throttled", "timestamp"]
+
+    filas = []
+    for batch_id, (alg, op, funcs, n_bloques) in enumerate(tareas, 1):
+        for i in range(n_bloques):
+            print(f"  batch {batch_id} {alg}/{op} bloque {i+1}/{n_bloques}...")
+            r = medir_bloque(alg, op, funcs)
+            r["run_id"] = len(filas) + 1
+            r["batch_id"] = batch_id
+            r["orden_en_lote"] = i + 1
+            r["timestamp"] = datetime.datetime.now().isoformat()
+            filas.append(r)
+
+    # Detener el hilo
+    detener.set()
+    hilo.join(timeout=2)
+
+    # Escribir CSV
+    with open(RUTA_CSV, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=campos)
+        w.writeheader()
+        for fila in filas:
+            w.writerow({k: fila.get(k, "") for k in campos})
+
+    print(f"\nListo. {len(filas)} filas escritas en {RUTA_CSV}")
+
+
+if __name__ == "__main__":
+    main()
