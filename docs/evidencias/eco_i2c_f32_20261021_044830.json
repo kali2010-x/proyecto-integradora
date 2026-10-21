@@ -1,0 +1,19 @@
+{
+  "fecha": "2026-10-21 04:48:30",
+  "modo": "i2c",
+  "frame_bytes": 32,
+  "tramas": 10000,
+  "correctas": 10000,
+  "distintas": 0,
+  "errores_io": 0,
+  "timeouts_ready": 0,
+  "tasa_error_trama": 0.0,
+  "ber_estimado": 0.0,
+  "duracion_s": 145.506,
+  "intercambios_por_s": 68.7,
+  "tasa_bus_kbps": 35.19,
+  "temp_c": 46.7,
+  "throttled": "0x0",
+  "cpu_mhz": 600.0,
+  "i2c_hz": null
+}
