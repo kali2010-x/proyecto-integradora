@@ -29,6 +29,15 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 
 ### Tasa de muestreo del INA219
 - **1424 muestras/s** (mínimo requerido: 200).
+
+## Semana 5 — Capa de enlace confiable
+
+- **Mecanismo:** Tramas con MAGIC (0xA5), TIPO, SEQ, ACK, LEN y CRC-16/CCITT sobre el bus I2C.
+- **Recuperación:** ARQ de parada y espera (la Raspberry reintenta si no recibe confirmación).
+- **Prueba de estabilidad:** 50/50 corridas exitosas sin TLS.
+- **Contadores del enlace:** 0 errores CRC, 0 timeouts, 0 errores I/O, 0 retransmisiones.
+- **Prueba de retransmisión:** Se desconectó el cable READY por ~2 segundos durante una corrida de 200 mensajes. El enlace registró timeouts (`enl_timeouts_ready` = 30 y 9) y se recuperó solo, terminando sin errores (`error: ""`, `esp_estado: 0`).
+- **Eficiencia del enlace:** 23.36% (fórmula: `(enl_payload_tx + enl_payload_rx) / enl_bytes_bus`). El resto del ancho de banda se usa en cabeceras, CRC y sondeos.
 ## Semana 6 — Hallazgo: Validación de certificados en IoT sin RTC
 
 - **Problema:** El ESP32 no tiene RTC con batería. Al arrancar, su reloj marca 1970, lo que hace que rechace el certificado X.509 del servidor (válido desde Oct 2026) con error `-3`.
