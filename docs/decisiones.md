@@ -17,3 +17,15 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 - **Resultado**: 0 errores en todos los casos.
 - **Tasa bus observada**: ~35 kbps (por debajo del límite de 100 kbps).
 - **Nota**: no fue necesario cambiar a I2C por software (clock stretching no fue problema).
+
+## Semana 4 — Decisión de FRAME_SIZE
+
+- **FRAME_SIZE definitivo:** 128 bytes
+- **Justificación:** Es el mayor tamaño con 0 errores en ambos modos (100 y 400 kHz). Las tramas grandes desperdician menos ancho de banda en cabeceras (8 B por trama).
+- **Datos a 400 kHz:**
+  - 32 B: 170.95 kbps, 0 errores
+  - 64 B: 150.04 kbps, 0 errores
+  - 128 B: 144.57 kbps, 0 errores
+
+### Tasa de muestreo del INA219
+- **1424 muestras/s** (mínimo requerido: 200).

@@ -1,0 +1,20 @@
+{
+  "etiqueta": "semana4",
+  "fecha": "20261021_101735",
+  "duracion_s": 300.0,
+  "n_muestras": 318782,
+  "p_reposo_mW": 2404.400549519107,
+  "p_desv_mW": 72.93006191137422,
+  "i_media_mA": 454.73930021142974,
+  "estado_inicio": {
+    "temp_c": 48.7,
+    "throttled": "0x0",
+    "cpu_mhz": 1800.0
+  },
+  "estado_fin": {
+    "temp_c": 54.5,
+    "throttled": "0x0",
+    "cpu_mhz": 1800.0
+  },
+  "csv": "data/raw/reposo_semana4_20261021_101735.csv"
+}
