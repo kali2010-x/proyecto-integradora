@@ -1,0 +1,48 @@
+{
+  "tipo": "campana",
+  "bloque": "prueba_clasico",
+  "sello": "20261023_104650",
+  "semilla": 42,
+  "reps": 10,
+  "grupos": [
+    "clasico"
+  ],
+  "tamanos": [
+    32,
+    128,
+    512
+  ],
+  "n_msgs": 10,
+  "bulk": 4096,
+  "frame": 128,
+  "pausa_s": 1.0,
+  "openssl": "OpenSSL 3.5.7 9 Jun 2026",
+  "python": "3.13.5",
+  "OPENSSL_CONF": "/home/usuariok/proyecto-kyber-rpi/pi/conf/openssl_grupos.cnf",
+  "git": "43af294",
+  "modo": "i2c",
+  "estado_inicio": {
+    "temp_c": 48.7,
+    "throttled": "0x0",
+    "cpu_mhz": 1800.0,
+    "i2c_hz": null
+  },
+  "archivos": {
+    "potencia": "data/raw/campana_prueba_clasico_20261023_104650_potencia.csv",
+    "corridas": "data/raw/campana_prueba_clasico_20261023_104650_corridas.jsonl"
+  },
+  "reposo_ini": [
+    43879186758297,
+    43889186859026
+  ],
+  "reposo_fin": [
+    44022305537323,
+    44032305624474
+  ],
+  "estado_fin": {
+    "temp_c": 50.1,
+    "throttled": "0x0",
+    "cpu_mhz": 1100.0,
+    "i2c_hz": null
+  }
+}

@@ -29,3 +29,8 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 
 ### Tasa de muestreo del INA219
 - **1424 muestras/s** (mínimo requerido: 200).
+## Semana 6 — Hallazgo: Validación de certificados en IoT sin RTC
+
+- **Problema:** El ESP32 no tiene RTC con batería. Al arrancar, su reloj marca 1970, lo que hace que rechace el certificado X.509 del servidor (válido desde Oct 2026) con error `-3`.
+- **Solución:** Se modificó `main.c` para fijar el reloj a la fecha de compilación + 1 día de margen usando `settimeofday()`.
+- **Implicación para la tesis:** En un despliegue real, un nodo IoT sin RTC requiere NTP o un RTC externo para validar certificados X.509. Este es un requisito de hardware/software que debe considerarse en la migración post-cuántica.
