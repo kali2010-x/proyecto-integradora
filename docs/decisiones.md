@@ -38,8 +38,9 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 - **Contadores del enlace:** 0 errores CRC, 0 timeouts, 0 errores I/O, 0 retransmisiones.
 - **Prueba de retransmisión:** Se desconectó el cable READY por ~2 segundos durante una corrida de 200 mensajes. El enlace registró timeouts (`enl_timeouts_ready` = 30 y 9) y se recuperó solo, terminando sin errores (`error: ""`, `esp_estado: 0`).
 - **Eficiencia del enlace:** 23.36% (fórmula: `(enl_payload_tx + enl_payload_rx) / enl_bytes_bus`). El resto del ancho de banda se usa en cabeceras, CRC y sondeos.
-## Semana 6 — Hallazgo: Validación de certificados en IoT sin RTC
+## Semana 6. Hallazgo: validación de certificados en un nodo sin reloj de tiempo real
 
-- **Problema:** El ESP32 no tiene RTC con batería. Al arrancar, su reloj marca 1970, lo que hace que rechace el certificado X.509 del servidor (válido desde Oct 2026) con error `-3`.
-- **Solución:** Se modificó `main.c` para fijar el reloj a la fecha de compilación + 1 día de margen usando `settimeofday()`.
-- **Implicación para la tesis:** En un despliegue real, un nodo IoT sin RTC requiere NTP o un RTC externo para validar certificados X.509. Este es un requisito de hardware/software que debe considerarse en la migración post-cuántica.
+- **Problema:** El ESP32 no tiene una fuente de hora con batería ni NTP en el banco de pruebas. Al arrancar, su reloj marca 1970, y wolfSSL rechaza el certificado X.509 del servidor (válido desde octubre de 2026) por estar "aún no vigente". En el registro aparece como `esp_estado = -3`.
+- **Solución en el laboratorio:** `main.c` fija el reloj a la fecha de compilación más 1 día de margen (`settimeofday()`) antes de cargar el certificado. Se mantiene la verificación de la firma y de las fechas.
+- **Limitación:** La hora depende de la fecha de compilación; con un firmware antiguo, el nodo podría aceptar un certificado vencido.
+- **Implicación:** Cualquier nodo IoT que valide certificados X.509 en TLS, sea con intercambio clásico o híbrido, necesita una fuente de hora confiable (NTP, RTC externo o la hora entregada por la unidad de borde). Se incluirá como recomendación de despliegue.
