@@ -44,3 +44,21 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 - **Solución en el laboratorio:** `main.c` fija el reloj a la fecha de compilación más 1 día de margen (`settimeofday()`) antes de cargar el certificado. Se mantiene la verificación de la firma y de las fechas.
 - **Limitación:** La hora depende de la fecha de compilación; con un firmware antiguo, el nodo podría aceptar un certificado vencido.
 - **Implicación:** Cualquier nodo IoT que valide certificados X.509 en TLS, sea con intercambio clásico o híbrido, necesita una fuente de hora confiable (NTP, RTC externo o la hora entregada por la unidad de borde). Se incluirá como recomendación de despliegue.
+
+## Semana 7. TLS 1.3 Híbrido sobre I2C
+
+- **Mecanismo:** Intercambio híbrido `X25519MLKEM768` (clásico + post-cuántico).
+- **Memoria:** El ESP32 tiene suficiente RAM y pila para soportar ML-KEM sin reinicios (`esp_stack_libre` > 28 KB).
+- **Costo:** El ClientHello híbrido es 7.6 veces más grande (1364 B vs 180 B) y el handshake tarda un 53.5% más (3.01 s vs 1.96 s), aunque esto último se vio afectado por la conexión del analizador lógico.
+- **Conclusión:** La migración post-cuántica es viable en hardware de bajo costo como el ESP32.
+
+
+
+## Semana 8. Confidencialidad e integridad (pruebas sin analizador)
+
+- **Pruebas de manipulación:** La capa de enlace (CRC) no protege contra ataques maliciosos, pero TLS 1.3 (AEAD) rechaza las alteraciones y reinyecciones. Las 5 pruebas de `ataque.py` arrojaron "TODAS LAS PRUEBAS PASARON".
+- **Confidencialidad:** Se comparó la telemetría en el bus buscando la palabra "TELEMETRIA" en los logs. Sin TLS apareció 6 veces; con TLS 0 veces. Esto demuestra que el cifrado híbrido protege los datos en el bus.
+- **Pendiente:** Captura con analizador lógico (PulseView) para tener una evidencia independiente al hardware de la Raspberry.
+
+### Interpretación para el Capítulo 3
+El CRC de la capa de enlace protege contra errores accidentales del bus, pero un atacante puede recalcularlo. TLS 1.3 usa cifrado autenticado (AEAD) con un número de secuencia por registro, por lo que cualquier alteración o repetición invalida la etiqueta de autenticación y la sesión se aborta. Estas pruebas verifican el comportamiento de la implementación; no constituyen una prueba formal de seguridad, y la resistencia frente a una computadora cuántica proviene del diseño del estándar, no de este experimento.

@@ -1,0 +1,34 @@
+{
+  "claro_sin_tls": {
+    "error_corrida": "",
+    "marcador_visible_en_bus": true,
+    "log": "/home/usuariok/proyecto-kyber-rpi/data/raw/tramas_sin_tls_20261024_234215.log"
+  },
+  "claro_con_tls": {
+    "error_corrida": "",
+    "marcador_visible_en_bus": false,
+    "log": "/home/usuariok/proyecto-kyber-rpi/data/raw/tramas_con_tls_20261024_234215.log"
+  },
+  "alterar_esp_a_pi": {
+    "modo": "alterar_esp_a_pi",
+    "handshake": "ok",
+    "servidor": "SSLError:RECORD_LAYER_FAILURE",
+    "esp32_estado": -308,
+    "rechazado": true
+  },
+  "alterar_pi_a_esp": {
+    "modo": "alterar_pi_a_esp",
+    "handshake": "ok",
+    "servidor": "SSLError:SSLV3_ALERT_BAD_RECORD_MAC",
+    "esp32_estado": -180,
+    "rechazado": true
+  },
+  "reinyectar": {
+    "modo": "reinyectar",
+    "handshake": "ok",
+    "servidor": "SSLError:SSLV3_ALERT_BAD_RECORD_MAC",
+    "esp32_estado": -180,
+    "rechazado": true
+  },
+  "CONCLUSION": "TODAS LAS PRUEBAS PASARON"
+}

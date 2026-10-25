@@ -1,0 +1,47 @@
+{
+  "tipo": "campana",
+  "bloque": "prueba_hibrido",
+  "sello": "20261024_233343",
+  "semilla": 42,
+  "reps": 15,
+  "grupos": [
+    "clasico",
+    "hibrido"
+  ],
+  "tamanos": [
+    128
+  ],
+  "n_msgs": 10,
+  "bulk": 4096,
+  "frame": 128,
+  "pausa_s": 1.0,
+  "openssl": "OpenSSL 3.5.7 9 Jun 2026",
+  "python": "3.13.5",
+  "OPENSSL_CONF": "/home/usuariok/proyecto-kyber-rpi/pi/conf/openssl_grupos.cnf",
+  "git": "1d9ee08",
+  "modo": "i2c",
+  "estado_inicio": {
+    "temp_c": 48.2,
+    "throttled": "0x0",
+    "cpu_mhz": 1800.0,
+    "i2c_hz": null
+  },
+  "archivos": {
+    "potencia": "data/raw/campana_prueba_hibrido_20261024_233343_potencia.csv",
+    "corridas": "data/raw/campana_prueba_hibrido_20261024_233343_corridas.jsonl"
+  },
+  "reposo_ini": [
+    1325971789968,
+    1335971905719
+  ],
+  "reposo_fin": [
+    1586743261983,
+    1596743372547
+  ],
+  "estado_fin": {
+    "temp_c": 47.7,
+    "throttled": "0x0",
+    "cpu_mhz": 1800.0,
+    "i2c_hz": null
+  }
+}
