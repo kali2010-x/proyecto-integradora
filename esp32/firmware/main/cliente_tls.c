@@ -7,6 +7,8 @@
 #endif
 #include <wolfssl/ssl.h>
 #include <wolfssl/openssl/ssl.h>
+#include <wolfssl/wolfcrypt/memory.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "enlace.h"
@@ -20,6 +22,40 @@
 
 #define TIMEOUT_IO_MS 15000
 static const char *g_ca; static int g_ca_len;
+
+/* ---------- Medición de la memoria pico de wolfSSL ----------
+ * wolfSSL reserva su memoria dinámica a través de estos tres envoltorios. Cada bloque lleva una
+ * cabecera de 8 bytes con su tamaño, para restarlo al liberarlo. g_mem_pico guarda el máximo de
+ * memoria simultánea; así se mide el pico real durante el handshake (ML-KEM incluido) y no solo la
+ * memoria que queda ocupada al final. Solo la tarea TLS usa wolfSSL, por eso no hace falta mutex. */
+#define CAB_MEM 8
+static size_t g_mem_actual, g_mem_pico;
+static void *tls_mem_malloc(size_t n) {
+    uint8_t *p = malloc(n + CAB_MEM);
+    if (!p) return NULL;
+    *(size_t *)p = n;
+    g_mem_actual += n;
+    if (g_mem_actual > g_mem_pico) g_mem_pico = g_mem_actual;
+    return p + CAB_MEM;
+}
+static void tls_mem_free(void *q) {
+    if (!q) return;
+    uint8_t *p = (uint8_t *)q - CAB_MEM;
+    g_mem_actual -= *(size_t *)p;
+    free(p);
+}
+static void *tls_mem_realloc(void *q, size_t n) {
+    if (!q) return tls_mem_malloc(n);
+    if (n == 0) { tls_mem_free(q); return NULL; }
+    uint8_t *p = (uint8_t *)q - CAB_MEM;
+    size_t viejo = *(size_t *)p;
+    uint8_t *r = realloc(p, n + CAB_MEM);
+    if (!r) return NULL;
+    *(size_t *)r = n;
+    g_mem_actual = g_mem_actual - viejo + n;
+    if (g_mem_actual > g_mem_pico) g_mem_pico = g_mem_actual;
+    return r + CAB_MEM;
+}
 
 /* ---------- E/S de wolfSSL sobre el enlace (bloqueante con timeout) ---------- */
 static int io_recv(WOLFSSL *ssl, char *buf, int sz, void *ctx) {
@@ -112,7 +148,8 @@ static void corrida(const orden_t *o, reporte_t *r) {
         return;
     }
 
-    uint32_t heap0 = plat_heap_libre();
+    size_t mem_base = g_mem_actual;            /* memoria de wolfSSL antes de la sesión */
+    g_mem_pico = g_mem_actual;
     WOLFSSL_CTX *ctx = SSL_CTX_new(wolfTLSv1_3_client_method());
     if (!ctx) { r->estado = -2; return; }
     if (wolfSSL_CTX_load_verify_buffer(ctx, (const unsigned char *)g_ca, g_ca_len, WOLFSSL_FILETYPE_PEM) != WOLFSSL_SUCCESS) {
@@ -129,7 +166,7 @@ static void corrida(const orden_t *o, reporte_t *r) {
     int ret = SSL_connect(ssl);
     r->t_hs = (uint32_t)(plat_us() - t0);
     if (ret != WOLFSSL_SUCCESS) { r->estado = (int16_t)cod_error(ssl, ret); goto fin; }
-    uint32_t heap1 = plat_heap_libre(); r->heap_usado = heap0 > heap1 ? heap0 - heap1 : 0;
+    r->heap_usado = (uint32_t)(g_mem_pico - mem_base);   /* pico: contexto + sesión + handshake */
 
     for (int i = 0; i < o->n_msgs; i++) {               /* telemetría con eco */
         armar_mensaje(msg, msz, o->run_id, i);
@@ -165,6 +202,7 @@ fin:
 
 void cliente_tls_init(const char *ca_pem, int ca_len) {
     g_ca = ca_pem; g_ca_len = ca_len;
+    wolfSSL_SetAllocators(tls_mem_malloc, tls_mem_free, tls_mem_realloc);   /* antes de cualquier reserva */
     wolfSSL_Init();
     plat_log("wolfSSL %s (se requiere >= 5.9.4), FRAME_SIZE=%d\n", wolfSSL_lib_version(), FRAME_SIZE);
 }
