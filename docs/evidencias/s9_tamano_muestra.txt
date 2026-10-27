@@ -1,0 +1,39 @@
+AVISO: piloto_estandar_20261027_002249_meta.json: ventana 'reposo_fin' incompleta; se usa hasta la última muestra
+  bloque   grupo        metrica  n_piloto    media  cv_pct  n_requerido
+estandar clasico    esp_t_hs_us        60 1.93e+06 0.00828            1
+estandar clasico    srv_t_hs_us        60 1.94e+06  0.0269            1
+estandar clasico  energia_hs_mJ        60      321    17.1           45
+estandar clasico rend_util_kbps        60     43.4  0.0309            1
+estandar hibrido    esp_t_hs_us        60 2.43e+06  0.0191            1
+estandar hibrido    srv_t_hs_us        60  2.4e+06  0.0246            1
+estandar hibrido  energia_hs_mJ        60      335    4.04            3
+estandar hibrido rend_util_kbps        60     43.4  0.0368            1
+  rapido clasico    esp_t_hs_us        30  1.9e+06  0.0091            1
+  rapido clasico    srv_t_hs_us        30  1.9e+06   0.122            1
+  rapido clasico  energia_hs_mJ        30      494    11.7           22
+  rapido clasico rend_util_kbps        30      153  0.0414            1
+  rapido hibrido    esp_t_hs_us        30 2.05e+06  0.0281            1
+  rapido hibrido    srv_t_hs_us        30 2.04e+06  0.0387            1
+  rapido hibrido  energia_hs_mJ        30      506    2.31            1
+  rapido hibrido rend_util_kbps        30      153  0.0499            1
+
+Repeticiones recomendadas por configuración: 45  (máximo entre métricas, mínimo 30)
+
+Precisión relativa (± %, 95 %) que se lograría con distintos n:
+  bloque   grupo        metrica  r_pct_n30  r_pct_n60  r_pct_n100
+estandar clasico    esp_t_hs_us        0.0        0.0         0.0
+estandar clasico    srv_t_hs_us        0.0        0.0         0.0
+estandar clasico  energia_hs_mJ        6.1        4.3         3.3
+estandar clasico rend_util_kbps        0.0        0.0         0.0
+estandar hibrido    esp_t_hs_us        0.0        0.0         0.0
+estandar hibrido    srv_t_hs_us        0.0        0.0         0.0
+estandar hibrido  energia_hs_mJ        1.4        1.0         0.8
+estandar hibrido rend_util_kbps        0.0        0.0         0.0
+  rapido clasico    esp_t_hs_us        0.0        0.0         0.0
+  rapido clasico    srv_t_hs_us        0.0        0.0         0.0
+  rapido clasico  energia_hs_mJ        4.2        3.0         2.3
+  rapido clasico rend_util_kbps        0.0        0.0         0.0
+  rapido hibrido    esp_t_hs_us        0.0        0.0         0.0
+  rapido hibrido    srv_t_hs_us        0.0        0.0         0.0
+  rapido hibrido  energia_hs_mJ        0.8        0.6         0.5
+  rapido hibrido rend_util_kbps        0.0        0.0         0.0

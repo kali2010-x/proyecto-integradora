@@ -50,12 +50,23 @@ def energia_mJ(pot, t0, t1, p_rep):
     return float(np.trapezoid(pp - p_rep, tt / 1e9))
 
 
+def ventana(meta, clave, pot, ruta=""):
+    """Devuelve [t0, t1] de una ventana de reposo. Si la campaña se interrumpió durante el reposo
+    final, la ventana quedó incompleta: se cierra con la última muestra del INA219 y se avisa."""
+    v = list(meta.get(clave) or [])
+    if len(v) >= 2:
+        return v[:2]
+    fin = int(pot.t_ns.iloc[-1])
+    print(f"AVISO: {os.path.basename(ruta)}: ventana '{clave}' incompleta; se usa hasta la última muestra")
+    return [v[0] if v else fin, fin]
+
+
 def procesar(rutas_meta):
     filas, reposos = [], []
     for ruta in rutas_meta:
         meta, runs, pot = cargar_bloque(ruta)
-        p_rep, p_sd, n = potencia_media(pot, *meta["reposo_ini"])
-        p_rep_fin, _, _ = potencia_media(pot, *meta["reposo_fin"])
+        p_rep, p_sd, n = potencia_media(pot, *ventana(meta, "reposo_ini", pot, ruta))
+        p_rep_fin, _, _ = potencia_media(pot, *ventana(meta, "reposo_fin", pot, ruta))
         reposos.append({"bloque": meta["bloque"], "p_reposo_ini_mW": p_rep, "p_reposo_sd_mW": p_sd,
                         "n_muestras": n, "p_reposo_fin_mW": p_rep_fin, "deriva_mW": p_rep_fin - p_rep,
                         "muestras_por_s": len(pot) / ((pot.t_ns.iloc[-1] - pot.t_ns.iloc[0]) / 1e9)})

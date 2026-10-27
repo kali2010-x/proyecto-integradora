@@ -1,0 +1,18 @@
+Archivo: data/raw/piloto_rapido_20261027_005041_corridas.jsonl
+Corridas: 60   correctas: 60   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones     0
+enl_errores_crc        36
+enl_timeouts_ready      0
+enl_errores_io          0
+
+Duración por corrida: media 3.05 s, máx 3.45 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1896461.7              180.0            61279.0          28543.2           153.3
+hibrido    2047134.0             1364.0            63583.0          28537.3           153.2
+
+Consistencia grupo pedido vs detectado: OK

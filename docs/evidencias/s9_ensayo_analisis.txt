@@ -1,0 +1,16 @@
+AVISO: piloto_estandar_20261027_002249_meta.json: ventana 'reposo_fin' incompleta; se usa hasta la última muestra
+Corridas: 180  válidas: 180  excluidas: 0
+  bloque  p_reposo_ini_mW  p_reposo_sd_mW  n_muestras  p_reposo_fin_mW  deriva_mW  muestras_por_s
+estandar      2572.436947       53.242302       38824      2608.522093  36.085146      646.122336
+estandar      2583.114473       31.887414       38806      2582.417082  -0.697391      645.768403
+  rapido      2760.898947       61.179806      119259      2777.132450  16.233503     1979.638924
+  bloque           metrica  media_clasico  media_hibrido  sobrecosto_pct  ic95_pct_inf  ic95_pct_sup    p_welch
+estandar       esp_t_hs_us      1.933e+06      2.426e+06            25.5         25.49         25.51 2.405e-217
+  rapido       esp_t_hs_us      1.896e+06      2.047e+06           7.945         7.936         7.958  1.085e-82
+estandar bytes_clienthello            180           1364           657.8         657.8         657.8        NaN
+  rapido bytes_clienthello            180           1364           657.8         657.8         657.8        NaN
+estandar     energia_hs_mJ            321          334.6           4.256       -0.6983         7.815    0.06543
+  rapido     energia_hs_mJ          494.5          506.2           2.375        -2.244         5.483     0.2854
+estandar    rend_util_kbps          43.39          43.39       -0.002132      -0.01418      0.009957     0.7314
+  rapido    rend_util_kbps          153.3          153.2        -0.03869      -0.06126      -0.01598   0.001857
+Listo: data/processed/*.csv y docs/figuras/*.png

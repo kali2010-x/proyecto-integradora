@@ -62,3 +62,22 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 
 ### Interpretación para el Capítulo 3
 El CRC de la capa de enlace protege contra errores accidentales del bus, pero un atacante puede recalcularlo. TLS 1.3 usa cifrado autenticado (AEAD) con un número de secuencia por registro, por lo que cualquier alteración o repetición invalida la etiqueta de autenticación y la sesión se aborta. Estas pruebas verifican el comportamiento de la implementación; no constituyen una prueba formal de seguridad, y la resistencia frente a una computadora cuántica proviene del diseño del estándar, no de este experimento.
+
+## Semana 9 - Entorno de la campaña
+- Fecha: 26/10/2026
+- Commit congelado: 3e0e0bf (etiqueta v0.9-campana). FRAME_SIZE = 128.
+- Gobernador de CPU: performance (se fija después de cada reinicio).
+- Red: SSH por Wi-Fi; Wi-Fi y Bluetooth se mantienen igual en todas las mediciones.
+- ESP32 alimentado por USB desde la Raspberry; analizador lógico desconectado.
+- esp_heap_usado_hs = memoria pico de wolfSSL (definición nueva desde este commit).
+   
+
+- Red: Raspberry Pi conectada por cable Ethernet al router. Acceso remoto vía SSH desde laptop por Wi-Fi a la misma red. El chip Wi-Fi de la Raspberry permanece habilitado pero inactivo (no cursa tráfico), por lo que su consumo es despreciable.
+
+## Semana 9 - Tamaño de muestra
+- Pilotos: estandar (100 kbit/s) y rapido (400 kbit/s), 10 repeticiones x 6 configuraciones, 60/60 correctas en ambos.
+- tamano_muestra.py (Jain 1991, r = 5 %, 95 %): n requerido maximo = 45, dado por energia_hs_mJ del clasico a 100 kbit/s
+  (±6,1 % con n = 30). Los tiempos de handshake y el rendimiento tienen variacion < 0,1 %.
+- Decision: N = 60 por configuracion (360 corridas por bloque). Con N = 60 la energia se estima con ±4,3 % o mejor
+  en todas las configuraciones y queda margen para corridas excluidas. Duracion estimada: ~50 min (estandar), ~38 min (rapido).
+- analisis.py corregido (solo analisis, no medicion) para tolerar un reposo final incompleto en un piloto.
