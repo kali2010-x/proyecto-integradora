@@ -1,0 +1,18 @@
+Archivo: data/raw/campana_rapido_20261027_015155_corridas.jsonl
+Corridas: 360   correctas: 360   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones      0
+enl_errores_crc        468
+enl_timeouts_ready       0
+enl_errores_io           0
+
+Duración por corrida: media 3.05 s, máx 3.46 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1898283.0              180.0            61279.0          28447.3           153.1
+hibrido    2046850.2             1364.0            63583.0          28445.7           153.2
+
+Consistencia grupo pedido vs detectado: OK

@@ -81,3 +81,6 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
 - Decision: N = 60 por configuracion (360 corridas por bloque). Con N = 60 la energia se estima con ±4,3 % o mejor
   en todas las configuraciones y queda margen para corridas excluidas. Duracion estimada: ~50 min (estandar), ~38 min (rapido).
 - analisis.py corregido (solo analisis, no medicion) para tolerar un reposo final incompleto en un piloto.
+
+## Semana 10 - Campaña
+- Orden de bloques (semilla 42): rapido, estandar. N = 60 por configuracion (360 corridas por bloque).
