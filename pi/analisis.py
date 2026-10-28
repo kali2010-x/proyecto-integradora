@@ -27,10 +27,21 @@ M_MSG = ["esp_rtt_media_us", "enl_bytes_bus", "energia_corrida_mJ", "enl_retrans
 
 
 # ---------------------------------------------------------------- carga y energía
+def _ubicar(ruta_meta, ruta_guardada):
+    """Busca un archivo del bloque: junto al meta (si la carpeta se reorganizó), en la ruta guardada,
+    y también su versión comprimida .gz (en GitHub los CSV de potencia se suben comprimidos)."""
+    base = os.path.basename(ruta_guardada)
+    for c in (os.path.join(os.path.dirname(os.path.abspath(ruta_meta)), base), os.path.join(RAIZ, ruta_guardada)):
+        for cand in (c, c + ".gz"):
+            if os.path.exists(cand):
+                return cand
+    raise FileNotFoundError(f"No se encontró {base} (ni .gz) junto a {ruta_meta} ni en {ruta_guardada}")
+
+
 def cargar_bloque(ruta_meta):
     meta = json.load(open(ruta_meta))
-    runs = pd.read_json(os.path.join(RAIZ, meta["archivos"]["corridas"]), lines=True)
-    pot = pd.read_csv(os.path.join(RAIZ, meta["archivos"]["potencia"]))
+    runs = pd.read_json(_ubicar(ruta_meta, meta["archivos"]["corridas"]), lines=True)
+    pot = pd.read_csv(_ubicar(ruta_meta, meta["archivos"]["potencia"]))
     return meta, runs, pot
 
 
