@@ -15,3 +15,5 @@ sim/esclavo_sim
 data/raw/*_potencia.csv
 data/raw/reposo_*.csv
 certs/*.key
+# Datos de pruebas y pilotos: también pesados sin comprimir
+data/pruebas/**/*_potencia.csv
