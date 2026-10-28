@@ -1,0 +1,35 @@
+digraph F {   graph [rankdir=TB, fontname="DejaVu Sans", nodesep=0.3, ranksep=0.2, splines=polyline, bgcolor=white, pad=0.15];
+  node  [fontname="DejaVu Sans", fontsize=11, shape=box, style="filled", fillcolor="#d7efed", color="#2a7f7a", penwidth=1.2, margin="0.1,0.03"];
+  edge  [fontname="DejaVu Sans", fontsize=10, color="#3d5a59", arrowsize=0.7];
+  subgraph cluster_m { label="Raspberry Pi — intercambio() en enlace.py"; fontsize=10; style="rounded,dashed"; color="#2a7f7a";
+    m0 [label="Inicio del intercambio", shape=box, style="rounded,filled", fillcolor="#1f7a6e", fontcolor=white, color="#1f7a6e"];
+    m1 [label="¿Datos pendientes\no en cola?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+    m2 [label="Construir trama DATOS\n(nueva o retransmisión)"];
+    m3 [label="Construir trama POLL"];
+    m4 [label="Escribir trama (I2C)", shape=polygon, sides=4, skew=0.28, fixedsize=true, width=2.45, height=0.49, fillcolor="#f3e6b8", color="#8a6d1d"];
+    m5 [label="¿READY = 1 antes\nde 200 ms?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+    m5b [label="Contar timeout", fillcolor="#fbe3e3", color="#aa3333"];
+    m6 [label="Leer respuesta (128 B)", shape=polygon, sides=4, skew=0.28, fixedsize=true, width=2.62, height=0.49, fillcolor="#f3e6b8", color="#8a6d1d"];
+    m7 [label="¿CRC-16\nválido?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+    m7b [label="Contar error de CRC\n(se reintentará)", fillcolor="#fbe3e3", color="#aa3333"];
+    m8 [label="¿ACK confirma la\ntrama pendiente?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+    m9 [label="Liberar trama pendiente"];
+    m10 [label="¿Secuencia\nesperada?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+    m11 [label="Entregar datos a TLS\no mensaje de control"];
+    m12 [label="Fin", shape=box, style="rounded,filled", fillcolor="#1f7a6e", fontcolor=white, color="#1f7a6e"];
+    m0 -> m1; m1 -> m2 [label=" Sí"]; m1 -> m3 [label=" No"];
+    m2 -> m4; m3 -> m4; m4 -> m5; m5 -> m6 [label=" Sí"]; m5 -> m5b [label=" No"]; m5b -> m6;
+    m6 -> m7; m7 -> m8 [label=" Sí"]; m7 -> m7b [label=" No"]; m7b -> m12;
+    m8 -> m9 [label=" Sí"]; m8 -> m10 [label=" No"]; m9 -> m10;
+    m10 -> m11 [label=" Sí"]; m10 -> m12 [label=" No (duplicada)"]; m11 -> m12;
+  }
+  subgraph cluster_e { label="ESP32 — interrupción y tarea de enlace"; fontsize=10; style="rounded,dashed"; color="#2a7f7a";
+    e0 [label="Trama recibida\n(interrupción I2C)", shape=box, style="rounded,filled", fillcolor="#1f7a6e", fontcolor=white, color="#1f7a6e"];
+    e1 [label="READY = 0 y poner\ntrama en la cola"];
+    e2 [label="Procesar trama: ACK,\nsecuencia, datos o control"];
+    e3 [label="Construir respuesta:\nDATOS pendientes o POLL\n+ ACK + CRC-16"];
+    e4 [label="Cargar respuesta en el\nbúfer del esclavo I2C", shape=polygon, sides=4, skew=0.28, fixedsize=true, width=2.62, height=0.68, fillcolor="#f3e6b8", color="#8a6d1d"];
+    e5 [label="READY = 1", shape=box, style="rounded,filled", fillcolor="#1f7a6e", fontcolor=white, color="#1f7a6e"];
+    e0 -> e1 -> e2 -> e3 -> e4 -> e5;
+  }
+}

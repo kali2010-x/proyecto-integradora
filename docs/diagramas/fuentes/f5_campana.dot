@@ -1,0 +1,22 @@
+digraph F {   graph [rankdir=TB, fontname="DejaVu Sans", nodesep=0.3, ranksep=0.2, splines=polyline, bgcolor=white, pad=0.15];
+  node  [fontname="DejaVu Sans", fontsize=11, shape=box, style="filled", fillcolor="#d7efed", color="#2a7f7a", penwidth=1.2, margin="0.1,0.03"];
+  edge  [fontname="DejaVu Sans", fontsize=10, color="#3d5a59", arrowsize=0.7];
+  c0 [label="Inicio", shape=box, style="rounded,filled", fillcolor="#1f7a6e", fontcolor=white, color="#1f7a6e"];
+  c1 [label="Leer parámetros: bloque, N,\ngrupos, tamaños, trama", shape=polygon, sides=4, skew=0.28, fixedsize=true, width=3.05, height=0.68, fillcolor="#f3e6b8", color="#8a6d1d"];
+  c2 [label="Generar plan aleatorio\n(grupo × tamaño × N, semilla 42)"];
+  c3 [label="Lanzar registrador del INA219\nen otro núcleo (potencia.py)"];
+  c4 [label="¿Registrador\nactivo?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+  c4e [label="Detener con error", fillcolor="#fbe3e3", color="#aa3333"];
+  c5 [label="Reposo inicial de 60 s\n(potencia de reposo)"];
+  c6 [label="¿Temperatura\n> 75 °C?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+  c6b [label="Esperar 10 s"];
+  c7 [label="Ejecutar corrida\n(servidor_tls.py)"];
+  c8 [label="Guardar resultado en JSONL\ny pausar 3 s", shape=polygon, sides=4, skew=0.28, fixedsize=true, width=2.96, height=0.68, fillcolor="#f3e6b8", color="#8a6d1d"];
+    c10 [label="¿Quedan\ncorridas?", shape=diamond, fillcolor="#fff4d6", color="#b38a1d", margin="0.04,0.02"];
+  c11 [label="Reposo final de 60 s\n(deriva de la potencia)"];
+  c12 [label="Detener registrador y guardar\nmetadatos (meta.json)", shape=polygon, sides=4, skew=0.28, fixedsize=true, width=3.22, height=0.68, fillcolor="#f3e6b8", color="#8a6d1d"];
+  c13 [label="Fin", shape=box, style="rounded,filled", fillcolor="#1f7a6e", fontcolor=white, color="#1f7a6e"];
+  c0 -> c1 -> c2 -> c3 -> c4; c4 -> c5 [label=" Sí"]; c4 -> c4e [label=" No"]; c4e -> c13;
+  c5 -> c6; c6 -> c6b [label=" Sí"]; c6b -> c6; c6 -> c7 [label=" No"];
+  c7 -> c8 -> c10; c10 -> c6 [label=" Sí"]; c10 -> c11 [label=" No"]; c11 -> c12 -> c13;
+}
