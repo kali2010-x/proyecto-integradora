@@ -89,3 +89,9 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
   bloque rápido; el piloto a 100 kbit/s dio 43 kbit/s, 2,43 s y 4,9 s. Se guarda como repetición del bloque rápido en
   data/pruebas/semana10_campana/rapido_repetido_20261029/ y no entra al análisis. El bloque estándar queda pendiente
   (baudrate=100000, N = 60).
+- 29/10 10:27: bloque estándar a 100 kbit/s, 360/360 corridas correctas (rendimiento 43 kbit/s, 4,9 s por corrida). A las 10:46
+  arrancó un segundo registrador de potencia (archivo campana_estandar_20261029_104604_potencia.csv) que siguió corriendo
+  después del bloque: la tasa de muestreo bajó de 645 a 310 muestras/s, la potencia de reposo final subió 40 mW (deriva del
+  bloque rápido: 7 mW) y la energía por handshake de las 226 corridas posteriores subió 14-17 %. Tiempos, bytes y memoria no
+  cambiaron. Se guarda en data/pruebas/semana10_campana/estandar_con_registrador_extra_20261029/ y el bloque estándar se repite.
+  El registro sobrante va a descartado/; la copia del 081204 que había quedado en data/raw se elimina (ya está en rapido_repetido).
