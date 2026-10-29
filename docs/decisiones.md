@@ -95,3 +95,7 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
   bloque rápido: 7 mW) y la energía por handshake de las 226 corridas posteriores subió 14-17 %. Tiempos, bytes y memoria no
   cambiaron. Se guarda en data/pruebas/semana10_campana/estandar_con_registrador_extra_20261029/ y el bloque estándar se repite.
   El registro sobrante va a descartado/; la copia del 081204 que había quedado en data/raw se elimina (ya está en rapido_repetido).
+- 29/10 11:33: bloque estándar definitivo (100 kbit/s, N = 60): 360/360 correctas, 647 muestras/s constantes, deriva del reposo
+  11 mW y energía por handshake estable entre la primera y la segunda mitad del bloque. El arranque abortado de las 11:31
+  (30 s, sin corridas) se mueve a data/pruebas/semana10_campana/descartado/. Semana 10 cerrada: data/raw contiene solo los
+  dos bloques oficiales (rapido 27/10 y estandar 29/10).
