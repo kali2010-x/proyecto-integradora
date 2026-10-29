@@ -1,0 +1,18 @@
+Archivo: data/raw/campana_estandar_20261029_113353_corridas.jsonl
+Corridas: 360   correctas: 360   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.92 s, máx 6.31 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1933097.2              180.0            61279.0          28428.0            43.4
+hibrido    2425811.7             1364.0            63583.0          28428.0            43.4
+
+Consistencia grupo pedido vs detectado: OK
