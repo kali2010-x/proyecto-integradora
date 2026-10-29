@@ -1,0 +1,35 @@
+from fc import *
+d = Diagrama()
+# ---------- analisis.py ----------
+A = Col(d, 150, 26, w=232, gap=16)
+a1 = A.add("term", ["Inicio"], w=110)
+a2 = A.add("io", ["Buscar los archivos de", "campaña (meta.json)"])
+a3 = A.add("pre", ["Procesar los bloques", "(subrutina, a la derecha)"])
+a4 = A.add("box", ["Resumen por configuración:", "n, media, desviación, IC 95 %"])
+a5 = A.add("box", ["Comparar híbrido vs. clásico:", "sobrecosto, Welch, Mann-", "Whitney e IC bootstrap"])
+a6 = A.add("io", ["Guardar los CSV y las figuras"])
+a7 = A.add("term", ["Fin"], w=100)
+d.marco(8, 12, 284, a7["b"] - 12 + 10, "analisis.py")
+# ---------- tamano_muestra.py ----------
+T = Col(d, 150, a7["b"] + 42, w=232, gap=16)
+t1 = T.add("term", ["Inicio"], w=110)
+t2 = T.add("pre", ["Procesar los pilotos", "(misma subrutina)"])
+t3 = T.add("box", ["Por grupo y métrica (Jain):", "n = (100·z·s / (r·x̄))², r = 5 %"])
+t4 = T.add("box", ["N = máx(n requerido, 30)"])
+t5 = T.add("io", ["Guardar tamano_muestra.csv"])
+t6 = T.add("term", ["Fin"], w=100)
+d.marco(8, t1["y"] - 14, 284, t6["b"] - t1["y"] + 24, "tamano_muestra.py")
+# ---------- subrutina procesar ----------
+XR = 590
+P = Col(d, 445, 26, w=232, gap=16)
+p1 = P.add("term", ["procesar(bloques)"], w=170)
+yj = p1["b"] + 13
+p2 = P.add("io", ["Cargar meta.json, corridas", "y potencia del bloque"], gap=26)
+p3 = P.add("box", ["P_{reposo}: media en la ventana", "inicial; deriva con la final"])
+p4 = P.add("box", ["Energía de cada handshake:", "E_{hs} = ∫ (P − P_{reposo}) dt"])
+p5 = P.add("dec", ["¿Quedan", "bloques?"], w=150, h=56)
+d.flecha(p5["right"], (XR, p5["cy"]), (XR, yj), (P.cx + 1, yj)); d.etq(p5["right"][0] + 6, p5["cy"] - 5, "Sí")
+p6 = P.add("box", ["Marcar válidas: sin error,", "estado 0 y sin throttling"], etq="No")
+p7 = P.add("term", ["Devolver la tabla", "de corridas"], w=170)
+d.marco(306, 12, 292, p7["b"] - 12 + 10, "Subrutina procesar")
+d.guardar("flujo_analisis")

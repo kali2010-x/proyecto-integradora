@@ -1,0 +1,40 @@
+from fc import *
+d = Diagrama()
+# ---------- columna izquierda: arranque (main.c) y espera de órdenes ----------
+L = Col(d, 92, 14, w=170)
+l1 = L.add("term", ["Inicio"], w=110)
+l2 = L.add("box", ["Configurar READY, la", "cola de tramas y el", "I2C esclavo (0x28)"])
+l3 = L.add("box", ["Crear la tarea de enlace", "(núcleo 0) y la tarea", "TLS (núcleo 1)"])
+l4 = L.add("box", ["Fijar el reloj: fecha de", "compilación + 1 día"], gap=34)
+l5 = L.add("box", ["Registrar el contador de", "memoria e iniciar wolfSSL"])
+yj = l5["b"] + 18
+l6 = L.add("dec", ["¿Llegó una", "orden START?"], w=150, h=66, gap=36)
+l7 = L.add("con", ["A"], w=22, etq="Sí")
+d.flecha(l6["left"], (7, l6["cy"]), (7, yj), (L.cx - 1, yj)); d.etq(12, l6["cy"] - 6, "No")
+bB = d.nodo("con", 150, yj - 11, ["B"], w=22); d.flecha(bB["left"], (L.cx + 1, yj))
+d.marco(1, l1["b"] + 9, 180, l3["b"] - l1["b"] + 1, "main.c")
+d.marco(1, l4["y"] - 10, 180, l7["b"] - l4["y"] + 16, "Tarea TLS")
+# ---------- columna principal: una corrida (cliente_tls.c) ----------
+M = Col(d, 390, 14, w=196)
+m1 = M.add("con", ["A"], w=22)
+m2 = M.add("dec", ["¿Grupo sin TLS?"], w=156, h=46)
+eco = d.nodo("box", 547, m2["b"] + 8, ["Eco en claro", "de n mensajes", "(control)"], w=96)
+d.flecha(m2["right"], (eco["cx"], m2["cy"]), eco["top"]); d.etq(m2["right"][0] + 6, m2["cy"] - 5, "Sí")
+m3 = M.add("box", ["Crear el contexto TLS 1.3,", "cargar la CA y fijar el", "grupo de claves"], etq="No")
+m4 = M.add("dec", ["¿Configuración", "correcta?"], w=170, h=60)
+m5 = M.add("box", ["Handshake (SSL_connect):", "medir tiempo y memoria pico"], etq="Sí")
+m6 = M.add("dec", ["¿Handshake", "correcto?"], w=160, h=58)
+m7 = M.add("box", ["Telemetría: n mensajes con", "eco cifrado (latencia) y un", "bloque de 4 KiB; cerrar"], etq="Sí")
+XE = 241
+err = d.nodo("box", XE, m7["y"], ["Registrar", "código de", "error"], w=84)
+d.flecha(m4["left"], (XE, m4["cy"]), err["top"]); d.etq(m4["left"][0] - 6, m4["cy"] - 5, "No", "end")
+d.flecha(m6["left"], (XE + 1, m6["cy"])); d.etq(m6["left"][0] - 6, m6["cy"] - 5, "No", "end")
+yj2 = m7["b"] + 14
+m8 = M.add("box", ["Liberar la sesión y medir", "la memoria libre"], gap=28)
+d.flecha(err["bot"], (XE, yj2), (M.cx - 1, yj2))
+yj3 = m8["b"] + 14
+m9 = M.add("io", ["Enviar el reporte R y Q", "a la Raspberry Pi"], gap=28)
+d.flecha(eco["bot"], (eco["cx"], yj3), (M.cx + 1, yj3))
+m10 = M.add("con", ["B"], w=22)
+d.marco(187, m2["y"] - 10, 412, m9["b"] - m2["y"] + 20, "Corrida (cliente_tls.c)")
+d.guardar("flujo_firmware")
