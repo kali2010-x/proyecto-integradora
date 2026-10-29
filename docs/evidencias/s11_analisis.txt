@@ -1,0 +1,14 @@
+Corridas: 720  válidas: 720  excluidas: 0
+  bloque  p_reposo_ini_mW  p_reposo_sd_mW  n_muestras  p_reposo_fin_mW  deriva_mW  muestras_por_s
+estandar      2573.717619       36.923314       38833      2584.993641  11.276022      645.912341
+  rapido      2739.790235       71.895742      120017      2747.083676   7.293441     1990.717169
+  bloque           metrica  media_clasico  media_hibrido  sobrecosto_pct  ic95_pct_inf  ic95_pct_sup    p_welch
+estandar       esp_t_hs_us      1.933e+06      2.426e+06           25.49         25.48          25.5          0
+  rapido       esp_t_hs_us      1.898e+06      2.047e+06           7.826         7.798         7.852 2.163e-309
+estandar bytes_clienthello            180           1364           657.8         657.8         657.8        NaN
+  rapido bytes_clienthello            180           1364           657.8         657.8         657.8        NaN
+estandar     energia_hs_mJ          333.9          345.3           3.423        -1.406         8.084      0.152
+  rapido     energia_hs_mJ          486.6          505.2           3.824        0.5282         7.205    0.02754
+estandar    rend_util_kbps          43.39          43.38        -0.01655      -0.03367     -0.003818    0.03493
+  rapido    rend_util_kbps          153.1          153.2         0.05946      -0.01031         0.193     0.3398
+Listo: data/processed/*.csv y docs/figuras/*.png

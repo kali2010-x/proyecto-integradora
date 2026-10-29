@@ -1,0 +1,7 @@
+válidas: 720 de 720
+grupo detectado = pedido: True
+ClientHello por grupo: {'clasico': array([180]), 'hibrido': array([1364])}
+muestras por handshake (mín): 1246
+temperatura: 52.5 a 56.9 °C | throttling: <StringArray>
+['0x0']
+Length: 1, dtype: str

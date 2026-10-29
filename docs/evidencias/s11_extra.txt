@@ -1,0 +1,19 @@
+1) Handshake (mediana, us) por grupo y modo de bus
+bloque    estandar     rapido
+grupo                        
+clasico  1933097.5  1896472.5
+hibrido  2425795.0  2046801.0
+
+2) Etapas del handshake (media, us): bus vs cómputo
+                  etapa1_clienthello_y_proceso_srv_us  etapa2_envio_vuelo_srv_us  etapa3_proceso_cliente_y_finished_us  srv_cpu_us
+grupo   bloque                                                                                                                    
+clasico estandar                              25879.0                   170442.0                             1744930.0      1479.0
+        rapido                                 8454.0                    48221.0                             1841299.0      1512.0
+hibrido estandar                             269651.0                   389464.0                             1744715.0      1784.0
+        rapido                                77635.0                   110115.0                             1855337.0      1822.0
+
+3) Correlación de Spearman tiempo-energía, por grupo y bloque
+clasico  estandar  rho = 0.08
+clasico  rapido    rho = 0.03
+hibrido  estandar  rho = -0.04
+hibrido  rapido    rho = 0.21
