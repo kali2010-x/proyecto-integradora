@@ -1,4 +1,4 @@
-Archivo: data/raw/campana_estandar_20261029_081204_corridas.jsonl
+Archivo: data/pruebas/semana10_campana/rapido_repetido_20261029/campana_rapido_20261029_081204_corridas.jsonl
 Corridas: 180   correctas: 180   con problema: 0
 
 Contadores del enlace (suma):

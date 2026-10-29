@@ -1,6 +1,6 @@
 {
   "tipo": "campana",
-  "bloque": "estandar",
+  "bloque": "rapido",
   "sello": "20261029_081204",
   "semilla": 42,
   "reps": 30,
@@ -29,8 +29,8 @@
     "i2c_hz": null
   },
   "archivos": {
-    "potencia": "data/raw/campana_estandar_20261029_081204_potencia.csv",
-    "corridas": "data/raw/campana_estandar_20261029_081204_corridas.jsonl"
+    "potencia": "data/raw/campana_rapido_20261029_081204_potencia.csv",
+    "corridas": "data/raw/campana_rapido_20261029_081204_corridas.jsonl"
   },
   "reposo_ini": [
     279660557037,

@@ -84,3 +84,8 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
 
 ## Semana 10 - Campaña
 - Orden de bloques (semilla 42): rapido, estandar. N = 60 por configuracion (360 corridas por bloque).
+- 29/10: la corrida del 29/10 08:12 (30 repeticiones, 180 corridas) se registró como «estandar», pero se ejecutó a 400 kbit/s:
+  rendimiento útil 153 kbit/s (imposible en un bus de 100 kbit/s), handshake híbrido 2,05 s y 3,05 s por corrida, iguales al
+  bloque rápido; el piloto a 100 kbit/s dio 43 kbit/s, 2,43 s y 4,9 s. Se guarda como repetición del bloque rápido en
+  data/pruebas/semana10_campana/rapido_repetido_20261029/ y no entra al análisis. El bloque estándar queda pendiente
+  (baudrate=100000, N = 60).
