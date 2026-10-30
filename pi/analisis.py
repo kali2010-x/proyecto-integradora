@@ -170,6 +170,15 @@ def _estilo(ax, titulo, ylabel):
     ax.tick_params(colors=TXT2)
 
 
+NOM_G = {"clasico": "Clásico (X25519)", "hibrido": "Híbrido (X25519MLKEM768)"}
+NOM_B = {"estandar": "Bus estándar\n(100 kbit/s)", "rapido": "Bus rápido\n(400 kbit/s)"}
+
+
+def _num(v, dec=1):
+    """Número con coma decimal (formato en español)."""
+    return f"{v:,.{dec}f}".replace(",", " ").replace(".", ",")
+
+
 def figuras(df, resumen):
     import matplotlib
     matplotlib.use("Agg")
@@ -178,33 +187,55 @@ def figuras(df, resumen):
     bloques = sorted(df.bloque.unique())
     grupos = [g for g in ("clasico", "hibrido") if g in df.grupo.unique()]
 
-    def barras_ic(metrica, titulo, ylabel, archivo, escala=1.0):
+    def barras_ic(metrica, titulo, ylabel, archivo, escala=1.0, dec=1):
         fig, ax = plt.subplots(figsize=(6.4, 3.8), facecolor=FONDO)
         x = np.arange(len(bloques)); w = 0.36
         for i, gr in enumerate(grupos):
             r = resumen[(resumen.metrica == metrica) & (resumen.grupo == gr)].set_index("bloque").reindex(bloques)
             m = r.media.to_numpy() * escala
             err = np.vstack([m - r.ic95_inf.to_numpy() * escala, r.ic95_sup.to_numpy() * escala - m])
-            ax.bar(x + (i - 0.5) * (w + 0.02), m, w, color=COL[gr], label=gr, yerr=err,
+            ax.bar(x + (i - 0.5) * (w + 0.02), m, w, color=COL[gr], label=NOM_G[gr], yerr=err,
                    error_kw={"ecolor": TXT2, "elinewidth": 1, "capsize": 3})
             tope = np.fmax(m, r.ic95_sup.to_numpy() * escala)        # etiqueta sobre la barra de error
             for xi, mi, ti in zip(x + (i - 0.5) * (w + 0.02), m, tope):
                 if not np.isnan(mi):
-                    ax.annotate(f"{mi:.1f}", (xi, ti), textcoords="offset points", xytext=(0, 4),
+                    ax.annotate(_num(mi, dec), (xi, ti), textcoords="offset points", xytext=(0, 4),
                                 ha="center", fontsize=8, color=TXT)
-        ax.set_xticks(x, [f"bus {b}" for b in bloques])
-        ax.set_ylim(top=ax.get_ylim()[1] * 1.08)
-        _estilo(ax, titulo, ylabel); ax.legend(frameon=False, labelcolor=TXT)
+        ax.set_xticks(x, [NOM_B.get(b, b) for b in bloques])
+        ax.set_ylim(top=ax.get_ylim()[1] * 1.28)
+        _estilo(ax, titulo, ylabel); ax.legend(frameon=False, labelcolor=TXT, loc="upper left", ncol=2, fontsize=8)
         fig.tight_layout(); fig.savefig(os.path.join(FIG, archivo), dpi=200); plt.close(fig)
 
     barras_ic("esp_t_hs_us", "Duración del handshake (medida en el nodo)", "ms (media ± IC 95 %)", "fig1_tiempo_handshake.png", 1e-3)
-    barras_ic("energia_hs_mJ", "Energía adicional del sistema por handshake", "mJ (media ± IC 95 %)", "fig2_energia_handshake.png")
+    # Energía: distribución no normal con atípicos -> diagrama de caja con la mediana, un panel por bus
+    from matplotlib.patches import Patch
+    fig, axs = plt.subplots(1, len(bloques), figsize=(6.8, 3.9), facecolor=FONDO)
+    axs = np.atleast_1d(axs)
+    for ax, b in zip(axs, bloques):
+        datos = [df[(df.bloque == b) & (df.grupo == gr)].energia_hs_mJ.dropna().to_numpy() for gr in grupos]
+        bp = ax.boxplot(datos, positions=range(len(grupos)), widths=0.55, patch_artist=True, showfliers=False,
+                        medianprops={"color": TXT, "linewidth": 1.8}, whiskerprops={"color": TXT2}, capprops={"color": TXT2})
+        for caja, gr in zip(bp["boxes"], grupos):
+            caja.set_facecolor(COL[gr]); caja.set_alpha(0.85); caja.set_edgecolor(TXT2)
+        tope = max(w.get_ydata().max() for w in bp["whiskers"]); piso = min(w.get_ydata().min() for w in bp["whiskers"])
+        rango = tope - piso
+        ax.set_ylim(piso - 0.08 * rango, tope + 0.30 * rango)
+        for k, d in enumerate(datos):
+            q1, q3 = np.percentile(d, [25, 75]); n_at = int((d > q3 + 1.5 * (q3 - q1)).sum())
+            ax.annotate(_num(np.median(d)), (k + 0.3, np.median(d)), xytext=(4, -3), textcoords="offset points",
+                        fontsize=8, color=TXT)
+            ax.annotate(f"{n_at} atípicos\n(hasta {_num(d.max(), 0)})", (k, tope + 0.12 * rango), ha="center", fontsize=7, color=TXT2)
+        ax.set_xticks(range(len(grupos)), ["Clásico" if g == "clasico" else "Híbrido" for g in grupos])
+        _estilo(ax, NOM_B.get(b, b).replace(chr(10), " "), "mJ (mediana y cuartiles)" if ax is axs[0] else "")
+        ax.title.set_fontsize(9.5)
+    fig.suptitle("Energía adicional del sistema por handshake", x=0.02, ha="left", fontsize=11, fontweight="bold", color=TXT)
+    fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig2_energia_handshake.png"), dpi=200); plt.close(fig)
     barras_ic("rend_util_kbps", "Rendimiento útil del flujo cifrado", "kbit/s (media ± IC 95 %)", "fig3_rendimiento.png")
-    barras_ic("bytes_clienthello", "Tamaño del ClientHello", "bytes", "fig4_bytes_clienthello.png")
+    barras_ic("bytes_clienthello", "Tamaño del ClientHello", "bytes", "fig4_bytes_clienthello.png", dec=0)
 
     # Etapas del handshake (barras apiladas) por bloque y grupo
     et = ["etapa1_clienthello_y_proceso_srv_us", "etapa2_envio_vuelo_srv_us", "etapa3_proceso_cliente_y_finished_us"]
-    nombres = ["ClientHello + proceso servidor", "envío vuelo del servidor", "proceso cliente + Finished"]
+    nombres = ["ClientHello + proceso del servidor", "envío de la respuesta del servidor", "proceso del cliente + Finished"]
     fig, ax = plt.subplots(figsize=(6.8, 3.8), facecolor=FONDO)
     etiquetas, base = [], None
     combos = [(b, g) for b in bloques for g in grupos]
@@ -215,7 +246,7 @@ def figuras(df, resumen):
         ax.bar(range(len(combos)), vals, 0.6, bottom=acum, color=ETAPAS_COL[j], label=nom,
                edgecolor=FONDO, linewidth=2)
         acum += np.nan_to_num(vals)
-    ax.set_xticks(range(len(combos)), [f"{g}\nbus {b}" for b, g in combos])
+    ax.set_xticks(range(len(combos)), [f"{'Clásico' if g == 'clasico' else 'Híbrido'}\n{NOM_B.get(b, b).split(chr(10))[0].replace('Bus ', 'bus ')}" for b, g in combos])
     _estilo(ax, "Etapas del handshake (medidas en el servidor)", "ms (media)")
     ax.legend(frameon=False, fontsize=8, labelcolor=TXT, loc="upper left")
     fig.tight_layout(); fig.savefig(os.path.join(FIG, "fig5_etapas_handshake.png"), dpi=200); plt.close(fig)
@@ -227,10 +258,10 @@ def figuras(df, resumen):
             r = resumen[(resumen.metrica == "esp_rtt_media_us") & (resumen.bloque == b) & (resumen.grupo == gr)]
             r = r.sort_values("msg_bytes")
             ax.errorbar(r.msg_bytes.astype(int), r.media / 1e3, yerr=[(r.media - r.ic95_inf) / 1e3, (r.ic95_sup - r.media) / 1e3],
-                        color=COL[gr], linewidth=2, marker="o", markersize=7, capsize=3, label=gr)
-        ax.set_xscale("log", base=2)
+                        color=COL[gr], linewidth=2, marker="o", markersize=7, capsize=3, label=NOM_G[gr])
+        ax.set_xscale("log", base=2); ax.set_xticks([32, 128, 512], ["32", "128", "512"]); ax.minorticks_off()
         ax.set_xlabel("tamaño del mensaje (bytes)", color=TXT2)
-        _estilo(ax, f"Latencia ida y vuelta de un mensaje (bus {b})", "ms (media ± IC 95 %)")
+        _estilo(ax, f"Latencia ida y vuelta de un mensaje ({NOM_B.get(b, b).replace(chr(10), ' ').lower()})", "ms (media ± IC 95 %)")
         ax.legend(frameon=False, labelcolor=TXT)
         fig.tight_layout(); fig.savefig(os.path.join(FIG, f"fig6_latencia_{b}.png"), dpi=200); plt.close(fig)
 
