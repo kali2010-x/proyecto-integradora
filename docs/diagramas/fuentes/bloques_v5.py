@@ -119,20 +119,34 @@ salidas.append((r1, "criterios de diseño")); entradas.append(None)
 # ---------- Fase 2: banco de pruebas (Objetivo 2) ----------
 y += BG; y0 = y; yb = y + PAD
 f1 = [(["Nodo sensor"], ["ESP32"]), (["Bus I2C dedicado"], ["100 y 400 kbit/s"]), (["Unidad de borde"], ["Raspberry Pi 4"])]
-f2 = [(["Analizador lógico"], ["visualiza los pulsos", "de SDA y SCL"]), (["Fuente de 5 V"], ["alimentación", "del sistema"]), (["Sensor INA219"], ["voltaje, corriente", "y potencia"])]
+f2 = [(["Fuente de 5 V"], ["alimentación", "del sistema"]), (["Sensor INA219"], ["voltaje, corriente", "y potencia"])]
 h1, h2 = hf(*f1) + D3, hf(*f2) + D3
 esp = bloque(colx[0], yb, BW, h1, *f1[0], "hw"); bus = bloque(colx[1], yb, BW, h1, *f1[1], "hw"); rpi = bloque(colx[2], yb, BW, h1, *f1[2], "hw")
 yr2 = yb + h1 + RGM
-ana = bloque(colx[0], yr2, BW, h2, *f2[0], "hw"); fue = bloque(colx[1], yr2, BW, h2, *f2[1], "hw"); ina = bloque(colx[2], yr2, BW, h2, *f2[2], "hw")
+fue = bloque(colx[1], yr2, BW, h2, *f2[0], "hw"); ina = bloque(colx[2], yr2, BW, h2, *f2[1], "hw")
 r2 = bloque(colx[3], yb + D3, BW, yr2 + h2 - yb - D3, ["Banco operativo"], ["bus verificado;", "potencia de reposo", "medida", "~impacto económico:", "~costo en USD"], "out")
 linea((esp["r"], esp["cy"]), (bus["x"], bus["cy"]), ini=True); linea((bus["r"], bus["cy"]), (rpi["x"], rpi["cy"]), ini=True)
-ym = (bus["b"] + ana["y"]) / 2
-linea((bus["cx"], bus["b"]), (bus["cx"], ym), (ana["cx"], ym), (ana["cx"], ana["top"]), dash=True)
-etq(ana["cx"] + 5, ym - 3, "observa", "start")
 linea((fue["r"], fue["cy"]), (ina["x"], ina["cy"]))
-linea((ina["cx"], ina["top"]), (rpi["cx"], rpi["b"])); etq(ina["cx"] + 5, ym - 3, "bus 1", "start")
+ym = (bus["b"] + fue["y"]) / 2
+linea((ina["cx"], ina["top"]), (rpi["cx"], rpi["b"])); etq(ina["cx"] + 5, ym - 1, "bus 1", "start")
 linea((rpi["r"], rpi["cy"]), (r2["x"], rpi["cy"])); linea((ina["r"], ina["cy"]), (r2["x"], ina["cy"]))
-marco([esp, bus, rpi, ana, fue, ina], "HARDWARE"); marco([r2], "RESULTADO")
+# instrumento externo: anotación fuera del marco de hardware, sin forma de bloque
+ax, aw, ay, ah = colx[0] - 2, BW + 4, yr2 - 1, h2 + 1
+o.append(f'<rect x="{ax}" y="{ay}" width="{aw}" height="{ah}" rx="6" fill="#f4f4f4" stroke="#8a8a8a" stroke-width="0.8" stroke-dasharray="2 2"/>')
+cxa = ax + aw / 2
+o.append(f'<text x="{cxa}" y="{ay + 12}" text-anchor="middle" font-size="6.8" font-weight="bold" letter-spacing="0.6" fill="#666">INSTRUMENTO EXTERNO</text>')
+for i, t in enumerate(["Analizador lógico:", "solo visualiza los", "pulsos de SDA y SCL"]):
+    o.append(f'<text x="{cxa}" y="{ay + 26 + i * 10.6:.1f}" text-anchor="middle" font-size="8.4" font-style="italic" fill="#444">{t}</text>')
+    if ancho(t, 8.4) > aw - 8: errores.append(t)
+o.append(f'<polyline points="{bus["cx"]},{bus["b"]} {bus["cx"]},{ym} {cxa},{ym} {cxa},{ay}" fill="none" stroke="#777" stroke-width="0.9" stroke-dasharray="1.5 2"/>')
+etq(cxa + 5, ym + 9, "sondas", "start")
+# marco de hardware en forma de L (deja fuera el instrumento externo)
+p = 6; xL, xR, yT, yB, xF, yC = esp["x"] - p, rpi["x"] + rpi["w"] + p, esp["y"] - p, ina["b"] + p, fue["x"] - p, esp["b"] + 4
+marcos.append(f'<path d="M{xL + 4},{yT} H{xR - 4} Q{xR},{yT} {xR},{yT + 4} V{yB - 4} Q{xR},{yB} {xR - 4},{yB} H{xF + 4} Q{xF},{yB} {xF},{yB - 4} V{yC} H{xL + 4} Q{xL},{yC} {xL},{yC - 4} V{yT + 4} Q{xL},{yT} {xL + 4},{yT} Z" fill="none" stroke="#8a8a8a" stroke-width="0.8"/>')
+an = _fT.getlength("HARDWARE") * 6.8 / 96 + 0.7 * 8 + 8
+rotulos.append(f'<rect x="{xR - 8 - an:.1f}" y="{yT - 5:.1f}" width="{an:.1f}" height="10" fill="#fff"/>')
+rotulos.append(f'<text x="{xR - 12:.1f}" y="{yT + 2.4:.1f}" text-anchor="end" font-size="6.8" font-weight="bold" letter-spacing="0.7" fill="#555">HARDWARE</text>')
+marco([r2], "RESULTADO")
 y = yr2 + h2 + PADB; bandas.append((y0, y - y0, 2, ["Banco", "de pruebas"], "Objetivo 2"))
 salidas.append((r2, "plataforma de hardware")); entradas.append(esp)
 
