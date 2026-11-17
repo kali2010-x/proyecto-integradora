@@ -25,10 +25,11 @@ static const char *g_ca; static int g_ca_len;
 
 /* ---------- Medición de la memoria pico de wolfSSL ----------
  * wolfSSL reserva su memoria dinámica a través de estos tres envoltorios. Cada bloque lleva una
- * cabecera de 8 bytes con su tamaño, para restarlo al liberarlo. g_mem_pico guarda el máximo de
+ * cabecera (8 bytes en el ESP32) con su tamaño, para restarlo al liberarlo. g_mem_pico guarda el máximo de
  * memoria simultánea; así se mide el pico real durante el handshake (ML-KEM incluido) y no solo la
  * memoria que queda ocupada al final. Solo la tarea TLS usa wolfSSL, por eso no hace falta mutex. */
-#define CAB_MEM 8
+/* 8 bytes en el ESP32 (32 bits) y 16 en el simulador de 64 bits: conserva la alineación de malloc */
+#define CAB_MEM (2 * sizeof(size_t))
 static size_t g_mem_actual, g_mem_pico;
 static void *tls_mem_malloc(size_t n) {
     uint8_t *p = malloc(n + CAB_MEM);
