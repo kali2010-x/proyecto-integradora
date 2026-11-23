@@ -105,7 +105,11 @@ if __name__ == "__main__":
     }
     for modo in ("alterar_esp_a_pi", "alterar_pi_a_esp", "reinyectar"):
         res[modo] = prueba_manipulacion(e, ctx, modo)
+    # La sesión con TLS debe completarse sin error: si el handshake ni siquiera empieza (p. ej. el ESP32 no
+    # carga el certificado), el marcador tampoco aparece y las manipulaciones «se rechazan» por tiempo
+    # agotado, lo que daría un falso «todas pasaron».
     ok = (res["claro_sin_tls"]["marcador_visible_en_bus"] and not res["claro_con_tls"]["marcador_visible_en_bus"]
+          and res["claro_con_tls"].get("error_corrida", "") == ""
           and all(res[m]["rechazado"] for m in ("alterar_esp_a_pi", "alterar_pi_a_esp", "reinyectar")))
     res["CONCLUSION"] = "TODAS LAS PRUEBAS PASARON" if ok else "REVISAR: alguna prueba no dio lo esperado"
     ruta = os.path.join(dest, f"ataques_{sello}.json")

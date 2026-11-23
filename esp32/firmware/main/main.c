@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/time.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
@@ -82,8 +85,26 @@ static void tarea_enlace(void *arg) {
 }
 
 #if !MODO_ECO
+/* El ESP32 no tiene reloj de tiempo real y arranca en 1970: con esa fecha, wolfSSL rechaza el
+ * certificado del servidor por «aún no vigente» (wolfSSL_CTX_load_verify_buffer falla y el reporte
+ * llega con estado -3). Se fija el reloj en la fecha de compilación más 1 día de margen, sin desactivar
+ * la verificación de fechas ni de firma (ver docs/decisiones.md). */
+static void fijar_reloj_compilacion(void) {
+    static const char meses[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+    char m[4] = { __DATE__[0], __DATE__[1], __DATE__[2], 0 };          /* __DATE__ = "Nov 23 2026" */
+    struct tm t = { 0 };
+    t.tm_mon  = (int)((strstr(meses, m) - meses) / 3);
+    t.tm_mday = atoi(__DATE__ + 4);
+    t.tm_year = atoi(__DATE__ + 7) - 1900;
+    t.tm_hour = atoi(__TIME__); t.tm_min = atoi(__TIME__ + 3); t.tm_sec = atoi(__TIME__ + 6);
+    struct timeval tv = { .tv_sec = mktime(&t) + 24 * 3600, .tv_usec = 0 };
+    settimeofday(&tv, NULL);
+    ESP_LOGI(TAG, "Reloj fijado en la fecha de compilación + 1 día: %s", __DATE__);
+}
+
 static void tarea_tls(void *arg) {
     (void)arg;
+    fijar_reloj_compilacion();
     cliente_tls_init(CERT_SERVIDOR_PEM, (int)strlen(CERT_SERVIDOR_PEM));
     cliente_tls_bucle();
 }
