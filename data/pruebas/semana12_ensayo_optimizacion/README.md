@@ -9,7 +9,7 @@ desconectado) antes de la campaña definitiva de N = 1 000. Rama `optimizacion-c
 |---|---|---|
 | `ataques_20261123_011933.json` | sin ajuste de reloj | Falla: ESP32 estado -3 (certificado «aún no vigente»: reloj en 1970). El «pasaron» era un falso positivo, corregido después en `ataque.py`. |
 | `ataques_20261123_013829.json` | con reloj, sin `WOLFSSL_PQC_HYBRIDS` | Falla: estado -5 (wolfSSL no ofrece el grupo X25519MLKEM768). `ataque.py` ya dice «REVISAR». |
-| `ataques_20261123_014537.json` | intento intermedio | Ver el archivo. |
+| `ataques_20261123_014537.json` | igual que el anterior (repetición) | Falla: estado -5 en las tres manipulaciones; «REVISAR». |
 | `ataques_20261123_015418.json` | **corregido** | **Correcto**: marcador visible sin TLS y oculto con TLS; las tres manipulaciones se rechazan después de un handshake válido (`BAD_RECORD_MAC` / `RECORD_LAYER_FAILURE`; -180 en el ESP32, falla de autenticación AES-GCM). |
 
 Los `tramas_*.log` son los bytes del bus de cada prueba.
