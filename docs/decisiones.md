@@ -6,8 +6,13 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 |---|---|---|---|
 | 2026-10-12 | Línea base clásica = X25519 (no P-256) | P-256 | El grupo híbrido combina X25519 + ML-KEM-768; así la diferencia medida es solo ML-KEM |
 | 2026-10-12 | wolfSSL >= 5.9.4 en el ESP32 | 5.8.2 | Con 5.8.2, ~3 % de handshakes híbridos rechazados por OpenSSL 3.5 (BAD_ECPOINT); con 5.9.4, 0 de 1000 |
-| | Tamaño de trama del enlace (FRAME_SIZE) | 32 / 64 / 128 | docs/evidencias/eco_*.json (semanas 3-4) |
-| | Gobernador de CPU durante la campaña | ondemand / performance | (semana 9) |
+| 2026-10-21 | Tamaño de trama del enlace: FRAME_SIZE = 128 bytes | 32 / 64 | docs/evidencias/semana03_eco_i2c/ y semana04_modo_rapido_y_calibracion/: 0 errores en 10 000 tramas a 100 y 400 kbit/s; menor sobrecarga de cabecera (6,25 %) |
+| 2026-10-26 | Gobernador de CPU = performance durante las mediciones | ondemand | Frecuencia fija (1,8 GHz) en todas las corridas; se vuelve a fijar después de cada reinicio (semana 9) |
+| 2026-10-26 | N = 60 por configuración (campaña de octubre) | N = 30 / 45 | docs/evidencias/semana09_piloto_y_muestra/: Jain con r = ±5 % exigía 45 |
+| 2026-11-17 | La campaña de 60 pasa a ser la **prueba piloto**; campaña definitiva con **N = 1 000** por configuración | Mantener N = 60 (±7 % en la energía) | data/raw/piloto_60/; cálculo en la sección «Semana 12» |
+| 2026-11-17 | Ejecutar cada bloque en 10 tandas de 100 repeticiones (semilla 42 + t) | Un solo bloque de 6 000 corridas | herramientas/campana_tandas.sh: una interrupción solo obliga a repetir la tanda afectada |
+| 2026-11-23 | Firmware y enlace optimizados (rama optimizacion-campana-1000) | Firmware de octubre | data/pruebas/semana12_ensayo_optimizacion/; herramientas/verificar_optimizaciones.py |
+
 ## Semana 3 — Enlace I2C dedicado
 
 - **Bus 3** (GPIO4/GPIO5, pines 7/29) dedicado al ESP32 a **100 kHz**.
@@ -99,5 +104,50 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
   11 mW y energía por handshake estable entre la primera y la segunda mitad del bloque. El arranque abortado de las 11:31
   (30 s, sin corridas) se mueve a data/pruebas/semana10_campana/descartado/. Semana 10 cerrada: data/raw contiene solo los
   dos bloques oficiales (rapido 27/10 y estandar 29/10).
-#semana 12 
-N=1000 agg para disminuir mi error y aumentar la eficacia.
+
+## Semana 11 - Análisis de la campaña de octubre (hoy, prueba piloto)
+- Fecha: 29/10/2026. Se analizaron las 720 corridas (360 por bloque, 60 por configuración), todas válidas, con
+  `pi/analisis.py`. Resultados en `data/processed/piloto_60/` y tabla en `docs/evidencias/semana11_analisis/s11_tabla_resultados.md`.
+- **Decisión: la energía se reporta con la mediana y se compara con Mann-Whitney.** Shapiro-Wilk rechazó la normalidad
+  (p < 10⁻²⁴) y entre 7 % y 11 % de los handshakes tuvo energía atípica (hasta ~1 000 mJ), repartida al azar en el orden y en
+  los tres tamaños: es actividad de fondo de la Raspberry, porque el INA219 mide todo el sistema. El tiempo se compara con Welch.
+- **Decisión: la energía no se compara entre bloques**, solo híbrido frente a clásico dentro de cada bloque: los bloques se
+  midieron en días distintos, con reposo distinto (2 574 frente a 2 740 mW) y distinta tasa de muestreo (646 frente a 1 991 muestras/s).
+- Hallazgo: el sobrecosto de tiempo del híbrido baja de +25,5 % (100 kbit/s) a +7,8 % (400 kbit/s) porque lo que crece es la
+  transmisión (ClientHello de 1 364 B frente a 180 B); el procesamiento del ESP32 (etapa 3) es casi igual en ambos grupos.
+- Se agregaron figuras para la tesis, `data/README_dataset.md`, la forma de reproducir sin la clave privada (`certs/README.md`)
+  y las capturas del analizador lógico (sin TLS, clásico e híbrido) en `docs/evidencias/semana08_confidencialidad/analizador/`.
+
+## Semana 12 - Tamaño de muestra definitivo (N = 1 000) y preparación de la campaña
+### Por qué se aumentó N
+- La tutora pidió reducir el error de las medias. Con N = 60, la semiamplitud del IC 95 % de la energía por handshake era de
+  ±3,2 % a ±7,4 % según la configuración, porque la energía es la métrica más variable (el tiempo, los bytes y el rendimiento
+  tienen coeficiente de variación menor que 1,5 % y ya eran precisos).
+- Criterio de Jain (1991), ecuación (1.7): n = (z · CV / r)², con z = 1,96 (95 %) y r = error relativo buscado. Con los CV medidos
+  en el piloto (energía: 12,5 % a 29,1 %), r = ±1 % exige n ≈ 1 000 cuando CV ≈ 16 %, el valor típico del piloto.
+- **Decisión: N = 1 000 por configuración** (6 000 corridas por bloque, 12 000 en total; ≈ 13,5 h a 100 kbit/s y ≈ 10,5 h a
+  400 kbit/s). Error esperado con r = 1,96 · CV / √N: energía ±0,8 % a ±1,1 % en 8 de las 12 configuraciones y hasta ±1,8 % en
+  el clásico a 100 kbit/s (CV 24-29 %), que para ±1 % necesitaría de 2 200 a 3 300 corridas; ese margen se acepta para que la
+  campaña dure un día. Tiempo, bytes y rendimiento: error menor que ±0,1 %.
+- «±1 %» significa que, con 95 % de confianza, la media medida está a menos de 1 % de la media real; no es una «eficacia del 99 %».
+- Las 720 corridas de octubre se conservan sin cambios como **prueba piloto** en `data/raw/piloto_60/` y
+  `data/processed/piloto_60/` (movidas con `git mv`, con su historia). Archivos viejos sin versionar: `data/raw/antiguos/`.
+
+### Optimización del código (rama `optimizacion-campana-1000`)
+- CRC-16 por tabla (ESP32) y con `binascii.crc_hqx` (Raspberry), búfer circular por bloques y espera de READY por flanco en
+  vez de sondeo. `herramientas/verificar_optimizaciones.py`: resultados idénticos al código original (CRC en 20 000 y 200 000
+  tramas; búfer en 300 000 operaciones).
+- Al compilar el firmware desde el repositorio aparecieron tres ajustes que solo existían en la copia local con la que se grabó
+  el firmware de octubre y ahora quedan versionados: dos líneas sueltas en `user_settings.h` que impedían compilar;
+  el ajuste del reloj con `settimeofday()` descrito en la semana 6 (sin él, estado -3: certificado «aún no vigente»), y
+  `WOLFSSL_PQC_HYBRIDS` (sin él, estado -5: wolfSSL 5.9.4 no ofrece el grupo X25519MLKEM768).
+- `ataque.py` daba «TODAS LAS PRUEBAS PASARON» aunque el handshake no empezara (los tiempos agotados contaban como rechazo);
+  ahora exige que la corrida con TLS termine sin error.
+- `prueba_eco.py` requiere el firmware de eco (MODO_ECO = 1); con el firmware TLS todas las tramas salen «distintas» y no indica
+  falla. El cableado se verificó con `i2cdetect` (0x28 en el bus 3 y 0x40 en el bus 1) y con las corridas.
+
+### Verificación antes de la campaña (23/11/2026)
+- `ataque.py`: sin TLS el marcador «TELEMETRIA» es visible y con TLS no; las tres manipulaciones se rechazan después de un
+  handshake correcto (`BAD_RECORD_MAC` / `RECORD_LAYER_FAILURE` en la Raspberry; -180, falla de autenticación AES-GCM, en el ESP32).
+- Ensayo de 12 corridas a 100 kbit/s: 12/12 sin error; INA219 a 646 muestras/s.
+- Evidencia: `data/pruebas/semana12_ensayo_optimizacion/`.
