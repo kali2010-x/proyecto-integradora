@@ -21,6 +21,10 @@ Los `tramas_*.log` son los bytes del bus de cada prueba.
 | Piloto de octubre (`data/raw/piloto_60/`) | desconocida (copia local) | 1,93 s | 2,43 s | 0/720 |
 | `piloto_estandar_20261123_015712_*` | `-Og` (depuración, valor por defecto de ESP-IDF) | 2,52 s | 2,97 s | 0/12 |
 | `piloto_estandar_20261123_023531_*` | `-O2` (rendimiento) | 1,75 s | 2,20 s | 0/12 |
+| `piloto_estandar_20261123_030103_*` | `-Os` (tamaño) | 2,15 s | 2,62 s | 0/12 |
+
+Ninguna de las tres opciones reproduce los tiempos del piloto de octubre, cuyo firmware se compiló con una copia
+local que no quedó en el repositorio. Para la campaña definitiva se eligió `-O2` (ver `docs/decisiones.md`).
 
 La diferencia está solo en la etapa 3 (cálculo dentro del ESP32): la transmisión por el bus (etapas 1 y 2) es igual o un poco
 más rápida que en octubre gracias a la optimización del enlace. La memoria pico de wolfSSL no cambia (59,8 y 62,1 KiB).

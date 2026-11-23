@@ -11,6 +11,7 @@ Anotar aquí cada decisión con fecha, opciones consideradas, evidencia y respon
 | 2026-10-26 | N = 60 por configuración (campaña de octubre) | N = 30 / 45 | docs/evidencias/semana09_piloto_y_muestra/: Jain con r = ±5 % exigía 45 |
 | 2026-11-17 | La campaña de 60 pasa a ser la **prueba piloto**; campaña definitiva con **N = 1 000** por configuración | Mantener N = 60 (±7 % en la energía) | data/raw/piloto_60/; cálculo en la sección «Semana 12» |
 | 2026-11-17 | Ejecutar cada bloque en 10 tandas de 100 repeticiones (semilla 42 + t) | Un solo bloque de 6 000 corridas | herramientas/campana_tandas.sh: una interrupción solo obliga a repetir la tanda afectada |
+| 2026-11-23 | Firmware del ESP32 compilado con `-O2` (CONFIG_COMPILER_OPTIMIZATION_PERF) | `-Og` (por defecto) / `-Os` | data/pruebas/semana12_ensayo_optimizacion/README.md: handshake clásico 1,75 s (-O2), 2,15 s (-Os), 2,52 s (-Og) |
 | 2026-11-23 | Firmware y enlace optimizados (rama optimizacion-campana-1000) | Firmware de octubre | data/pruebas/semana12_ensayo_optimizacion/; herramientas/verificar_optimizaciones.py |
 
 ## Semana 3 — Enlace I2C dedicado
@@ -151,3 +152,9 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
   handshake correcto (`BAD_RECORD_MAC` / `RECORD_LAYER_FAILURE` en la Raspberry; -180, falla de autenticación AES-GCM, en el ESP32).
 - Ensayo de 12 corridas a 100 kbit/s: 12/12 sin error; INA219 a 646 muestras/s.
 - Evidencia: `data/pruebas/semana12_ensayo_optimizacion/`.
+- Optimización del compilador del ESP32: el firmware de octubre se había compilado con una configuración local que no quedó
+  versionada. Se probaron las tres opciones con 12 corridas cada una (handshake clásico / híbrido): `-Og` 2,52 / 2,97 s;
+  `-Os` 2,15 / 2,62 s; `-O2` 1,75 / 2,20 s; piloto de octubre 1,93 / 2,43 s. Ninguna reproduce el piloto. **Decisión: `-O2`**
+  (rendimiento), fijado en `esp32/firmware/sdkconfig.defaults` para que cualquier compilación desde el repositorio sea igual.
+  La diferencia está solo en el cálculo dentro del ESP32 (etapa 3); la transmisión y la memoria no cambian. Por eso los tiempos
+  absolutos de la campaña definitiva no se comparan con el piloto: el piloto solo se usó para estimar la variabilidad y fijar N.
