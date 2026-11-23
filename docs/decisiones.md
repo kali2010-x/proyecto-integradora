@@ -99,3 +99,5 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
   11 mW y energía por handshake estable entre la primera y la segunda mitad del bloque. El arranque abortado de las 11:31
   (30 s, sin corridas) se mueve a data/pruebas/semana10_campana/descartado/. Semana 10 cerrada: data/raw contiene solo los
   dos bloques oficiales (rapido 27/10 y estandar 29/10).
+#semana 12 
+N=1000 agg para disminuir mi error y aumentar la eficacia.
