@@ -1,0 +1,180 @@
+Archivo: data/raw/campana_estandar_20261123_080101_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749545.1              180.0            61279.0          27917.3            44.8
+hibrido    2202029.8             1364.0            63583.0          27919.2            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_091807_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749474.1              180.0            61279.0          27916.0            44.8
+hibrido    2201923.8             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_103512_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        3
+enl_timeouts_ready     0
+enl_errores_io         1
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749592.7              180.0            61279.0          27916.0            44.8
+hibrido    2202249.0             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_115217_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749563.6              180.0            61279.0          27916.0            44.8
+hibrido    2202041.4             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_130922_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749619.4              180.0            61279.0          27916.0            44.8
+hibrido    2202197.8             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_142628_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749588.1              180.0            61279.0          27916.0            44.8
+hibrido    2202148.5             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_154334_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749591.6              180.0            61279.0          27916.0            44.8
+hibrido    2202144.4             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_170040_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749612.1              180.0            61279.0          27916.0            44.8
+hibrido    2202203.2             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261123_181745_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749612.3              180.0            61279.0          27916.0            44.8
+hibrido    2202236.4             1364.0            63583.0          27916.0            44.8
+
+Consistencia grupo pedido vs detectado: OK
+Archivo: data/raw/campana_estandar_20261124_075236_corridas.jsonl
+Corridas: 600   correctas: 600   con problema: 0
+
+Contadores del enlace (suma):
+enl_retransmisiones    0
+enl_errores_crc        0
+enl_timeouts_ready     0
+enl_errores_io         0
+
+Duración por corrida: media 4.45 s, máx 5.78 s
+
+Medias por grupo (solo corridas correctas):
+         esp_t_hs_us  bytes_clienthello  esp_heap_usado_hs  esp_stack_libre  rend_util_kbps
+grupo                                                                                      
+clasico    1749548.2              180.0            61279.0          27950.5            44.8
+hibrido    2202047.0             1364.0            63583.0          27954.5            44.8
+
+Consistencia grupo pedido vs detectado: OK
