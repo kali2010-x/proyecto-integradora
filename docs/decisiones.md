@@ -158,3 +158,10 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
   (rendimiento), fijado en `esp32/firmware/sdkconfig.defaults` para que cualquier compilación desde el repositorio sea igual.
   La diferencia está solo en el cálculo dentro del ESP32 (etapa 3); la transmisión y la memoria no cambian. Por eso los tiempos
   absolutos de la campaña definitiva no se comparan con el piloto: el piloto solo se usó para estimar la variabilidad y fijar N.
+
+### Campaña definitiva: bloque estándar (100 kbit/s)
+- 23/11/2026 08:01 a 24/11/2026: 10 tandas de 600 corridas (semillas 42 a 51), firmware `-O2`.
+- 23/11/2026, ~21:00: corte de luz durante la tanda 10 (464 de 600 corridas). La tanda incompleta se apartó en
+  `data/descartados/` y se repitió completa con la misma semilla (51) el 24/11 (`campana_estandar_20261124_075236_*`).
+  Las tandas 1 a 9 no se afectaron. Después del corte se volvió a fijar el gobernador en performance y se lanzó dentro de tmux.
+- Resultado: 6 000/6 000 corridas correctas, 0 retransmisiones, 3 errores de CRC recuperados por el enlace.
