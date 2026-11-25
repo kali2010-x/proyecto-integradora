@@ -1,0 +1,49 @@
+{
+  "tipo": "piloto",
+  "bloque": "rapido",
+  "sello": "20261124_212047",
+  "semilla": 42,
+  "reps": 2,
+  "grupos": [
+    "clasico",
+    "hibrido"
+  ],
+  "tamanos": [
+    32,
+    128,
+    512
+  ],
+  "n_msgs": 10,
+  "bulk": 4096,
+  "frame": 128,
+  "pausa_s": 3.0,
+  "openssl": "OpenSSL 3.5.9 29 Sep 2026",
+  "python": "3.13.5",
+  "OPENSSL_CONF": "/home/usuariok/proyecto-kyber-rpi/pi/conf/openssl_grupos.cnf",
+  "git": "bc32971",
+  "modo": "i2c",
+  "estado_inicio": {
+    "temp_c": 51.6,
+    "throttled": "0x0",
+    "cpu_mhz": 1800.0,
+    "i2c_hz": null
+  },
+  "archivos": {
+    "potencia": "data/raw/piloto_rapido_20261124_212047_potencia.csv",
+    "corridas": "data/raw/piloto_rapido_20261124_212047_corridas.jsonl"
+  },
+  "reposo_ini": [
+    274330802209,
+    334330888626
+  ],
+  "reposo_fin": [
+    401444280335,
+    461444371373
+  ],
+  "estado_fin": {
+    "temp_c": 55.0,
+    "throttled": "0x0",
+    "cpu_mhz": 1800.0,
+    "i2c_hz": null
+  }
+}
