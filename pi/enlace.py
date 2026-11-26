@@ -14,7 +14,9 @@ Protocolo: el maestro hace "intercambios": ESCRIBE una trama y luego LEE una
 trama de respuesta (siempre exactamente una lectura por escritura exitosa).
 ARQ de parada y espera en ambos sentidos (retransmite hasta recibir ACK).
 """
+import binascii
 import collections
+import os
 import struct
 import time
 
@@ -25,7 +27,15 @@ CRC_LEN = 2
 
 
 def crc16_ccitt(data: bytes, crc: int = 0xFFFF) -> int:
-    """CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF). '123456789' -> 0x29B1."""
+    """CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF). '123456789' -> 0x29B1.
+    Optimización: se calcula con binascii.crc_hqx (implementado en C con tabla), que da el mismo
+    resultado que el cálculo bit a bit (crc16_ccitt_referencia) y evita ~1 000 iteraciones de
+    Python por trama. Equivalencia y ahorro: herramientas/verificar_optimizaciones.py."""
+    return binascii.crc_hqx(data, crc)
+
+
+def crc16_ccitt_referencia(data: bytes, crc: int = 0xFFFF) -> int:
+    """Versión original bit a bit; se conserva solo como referencia para las pruebas."""
     for b in data:
         crc ^= b << 8
         for _ in range(8):
@@ -226,19 +236,46 @@ class BusI2C:
         self.bus = SMBus(bus_num)
         self.dir = direccion
         self.pin = pin_ready
-        self.req = gpiod.request_lines(
-            chip, consumer="ready-esp32",
-            config={pin_ready: gpiod.LineSettings(direction=Direction.INPUT, bias=Bias.PULL_DOWN)})
+        # Optimización: esperar READY por FLANCO (el núcleo duerme hasta que el pin sube) en lugar de
+        # consultar el pin en un lazo sin pausa, que mantenía un núcleo al 100 % y sumaba consumo a la
+        # medición de energía. ENLACE_READY_SONDEO=1 fuerza el método original (lazo de consulta).
+        self._por_flanco = False
+        if os.environ.get("ENLACE_READY_SONDEO", "") != "1":
+            try:
+                from gpiod.line import Edge
+                self.req = gpiod.request_lines(
+                    chip, consumer="ready-esp32",
+                    config={pin_ready: gpiod.LineSettings(direction=Direction.INPUT, bias=Bias.PULL_DOWN,
+                                                          edge_detection=Edge.RISING)})
+                self._por_flanco = True
+            except Exception:
+                self._por_flanco = False
+        if not self._por_flanco:
+            self.req = gpiod.request_lines(
+                chip, consumer="ready-esp32",
+                config={pin_ready: gpiod.LineSettings(direction=Direction.INPUT, bias=Bias.PULL_DOWN)})
 
     def escribir(self, data: bytes):
         self.bus.i2c_rdwr(self._i2c_msg.write(self.dir, data))
 
     def esperar_ready(self, timeout_s):
+        if not self._por_flanco:                         # método original: lazo de consulta
+            fin = time.monotonic() + timeout_s
+            while time.monotonic() < fin:
+                if self.req.get_value(self.pin) == self._activo:
+                    return True
+            return False
         fin = time.monotonic() + timeout_s
-        while time.monotonic() < fin:
+        while True:
             if self.req.get_value(self.pin) == self._activo:
+                if self.req.wait_edge_events(0):         # descarta flancos ya atendidos
+                    self.req.read_edge_events()
                 return True
-        return False
+            resto = fin - time.monotonic()
+            if resto <= 0:
+                return False
+            if self.req.wait_edge_events(resto):         # duerme hasta el flanco de subida o el plazo
+                self.req.read_edge_events()
 
     def leer(self, n):
         m = self._i2c_msg.read(self.dir, n)

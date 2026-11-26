@@ -169,13 +169,128 @@ Organizada por las semanas de la plataforma de Materia Integradora. Cada activid
 
 **Evidencias:** `README.md`, `docs/evidencias/README.md`, `data/README.md`
 
+### 5.4 Semana 10 del laboratorio: bloque a 100 kbit/s
+
+| Campo | Valor |
+|---|---|
+| Inicio | 29/10/2026 |
+| Cumplimiento | 29/10/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Laboratorio |
+| Adjunto | `docs/bitacora_semanal/Bitacora_Semana_05.pdf` |
+
+**Descripción:** Se ejecutó el bloque a 100 kbit/s con 360 corridas en orden aleatorio. Dos ejecuciones se apartaron y quedaron documentadas: una corrió a 400 kbit/s por error de configuración y otra tuvo un segundo registrador de potencia activo que alteró la energía. El bloque definitivo (29/10, 11:33) dio 360 de 360 corridas correctas, 647 muestras/s constantes y una deriva del reposo de 11 mW.
+
+**Evidencias:** `docs/decisiones.md` (semana 10), `data/pruebas/semana10_campana/`
+
+### 5.5 Semana 11 del laboratorio: análisis estadístico de la campaña de octubre
+
+| Campo | Valor |
+|---|---|
+| Inicio | 29/10/2026 |
+| Cumplimiento | 29/10/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Análisis |
+| Adjunto | `docs/bitacora_semanal/Bitacora_Semana_05.pdf` |
+
+**Descripción:** Se analizaron las 720 corridas con `analisis.py`: medias e intervalos de confianza, pruebas de Welch y Mann-Whitney y sobrecosto con bootstrap. Como la energía no fue normal (Shapiro-Wilk, p < 10⁻²⁴), se reportó con la mediana. Sobrecosto del híbrido en el tiempo del handshake: +25,5 % a 100 kbit/s y +7,8 % a 400 kbit/s; en la energía (mediana): +7,4 % y +4,5 %. Estos datos pasaron después a ser la prueba piloto (ver semana 8).
+
+**Evidencias:** `docs/evidencias/semana11_analisis/`, `data/processed/piloto_60/`
+
+## Semana 6 (02/11/2026 – 06/11/2026)
+
+### 6.1 Capturas con el analizador lógico
+
+| Campo | Valor |
+|---|---|
+| Inicio | 01/11/2026 |
+| Cumplimiento | 01/11/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Laboratorio |
+| Adjunto | (pendiente) |
+
+**Descripción:** Se capturó el bus I²C con el analizador lógico en tres casos: sin TLS, con TLS clásico y con TLS híbrido. Las imágenes anotadas muestran la telemetría legible sin TLS y cifrada con TLS, como evidencia independiente de la Raspberry Pi.
+
+**Evidencias:** `docs/evidencias/semana08_confidencialidad/analizador/`
+
+## Semana 8 (16/11/2026 – 20/11/2026)
+
+### 8.1 Redacción del Capítulo 2 (metodología)
+
+| Campo | Valor |
+|---|---|
+| Inicio | 14/11/2026 |
+| Cumplimiento | 17/11/2026 |
+| Responsable | Kevin Pérez, David Yela |
+| Tipo de actividad | Documentación |
+| Adjunto | (pendiente) |
+
+**Descripción:** Se reestructuró el Capítulo 2 según las observaciones del profesor guía y de la tutora. Incluye: el escenario y la justificación de los dispositivos, con las consideraciones éticas y legales; el análisis de tecnologías y la matriz de decisión; el diagrama de bloques en cinco fases con contornos por tipo; el diagrama de flujo general y el pseudocódigo de cada programa, con las palabras clave en inglés; y el diseño experimental.
+
+**Evidencias:** Capítulo 2 (DOCX y PDF)
+
+### 8.2 Prueba piloto, tamaño de muestra definitivo y optimización del código
+
+| Campo | Valor |
+|---|---|
+| Inicio | 17/11/2026 |
+| Cumplimiento | 17/11/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Análisis y desarrollo |
+| Adjunto | (pendiente) |
+
+**Descripción:** A pedido de la tutora, para reducir el error de las medias, la campaña de 60 corridas por configuración pasó a ser la prueba piloto. Con sus coeficientes de variación (energía: 12,5 % a 29,1 %) y el criterio de Jain se fijó N = 1 000 por configuración: ±0,8 % a ±1,1 % en 8 de las 12 configuraciones y hasta ±1,8 % en el clásico a 100 kbit/s. Se optimizó el enlace: CRC por tabla, búfer circular por bloques y espera de READY por flanco, con resultados idénticos al código original. Se agregó la ejecución en 10 tandas de 100 repeticiones, reanudable.
+
+**Evidencias:** `docs/decisiones.md` (semana 12), `herramientas/verificar_optimizaciones.py`, `herramientas/campana_tandas.sh`
+
+## Semana 9 (23/11/2026 – 27/11/2026)
+
+### 9.1 Verificación del firmware optimizado en el banco
+
+| Campo | Valor |
+|---|---|
+| Inicio | 23/11/2026 |
+| Cumplimiento | 23/11/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Laboratorio |
+| Adjunto | (pendiente) |
+
+**Descripción:** Al compilar el firmware desde el repositorio aparecieron tres ajustes que solo existían en la copia local de octubre, y quedaron versionados: dos líneas sueltas en `user_settings.h`, el ajuste del reloj (estado -3) y `WOLFSSL_PQC_HYBRIDS` (estado -5). Se corrigió un falso positivo de `ataque.py`. Las pruebas de seguridad pasaron: el marcador es visible sin TLS y oculto con TLS, y las tres manipulaciones se rechazaron. Se compararon tres optimizaciones del compilador (`-Og`, `-Os` y `-O2`) y se eligió `-O2`, con un handshake de 1,75 s en el clásico y 2,20 s en el híbrido.
+
+**Evidencias:** `data/pruebas/semana12_ensayo_optimizacion/`, `docs/decisiones.md`
+
+### 9.2 Campaña definitiva: bloque a 100 kbit/s (N = 1 000)
+
+| Campo | Valor |
+|---|---|
+| Inicio | 23/11/2026 |
+| Cumplimiento | 24/11/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Laboratorio |
+| Adjunto | (pendiente) |
+
+**Descripción:** Se ejecutaron 10 tandas de 600 corridas (100 repeticiones × 6 configuraciones, semillas 42 a 51). Un corte de luz el 23/11 interrumpió la tanda 10 (464 de 600); se apartó y se repitió completa con la misma semilla el 24/11. Resultado: 6 000 de 6 000 corridas correctas, sin retransmisiones, con 3 errores de CRC recuperados por el enlace. Medianas: handshake de 1,75 s en el clásico y 2,20 s en el híbrido; ClientHello de 180 y 1 364 bytes; memoria pico de 61 279 y 63 583 bytes; rendimiento útil de 44,8 kbit/s.
+
+**Evidencias:** `data/raw/campana_estandar_*`, `docs/evidencias/s12_resumen_estandar.txt`
+
+### 9.3 Campaña definitiva: bloque a 400 kbit/s y análisis de las 12 000 corridas
+
+| Campo | Valor |
+|---|---|
+| Inicio | 24/11/2026 |
+| Cumplimiento | 26/11/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Laboratorio y análisis |
+| Adjunto | (pendiente) |
+
+**Descripción:** Se ejecutaron 10 tandas de 600 corridas a 400 kbit/s, después de un ensayo previo de 12 corridas sin error. En la tanda 7 (semilla 48) el registrador del INA219 se detuvo a los 19 minutos por un error de E/S del bus I²C 1, y 406 corridas quedaron sin medición de potencia. Se corrigió el código: el registrador ahora reintenta las lecturas, la campaña se detiene si el registrador falla, el script de tandas comprueba que la potencia llegue al final de cada tanda y el análisis deja vacía la energía sin registro. La tanda 7 se apartó en `data/descartados/` y se repitió con la misma semilla, sin lecturas fallidas. Resultado: 12 000 de 12 000 corridas válidas, sin retransmisiones y con 4 errores de CRC recuperados. Sobrecosto del híbrido en el tiempo del handshake: +25,9 % a 100 kbit/s y +7,8 % a 400 kbit/s. ClientHello: +657,8 % (180 frente a 1 364 bytes). Memoria pico: +3,8 %. Energía por handshake: +5,4 % y +4,4 % en la media (IC 95 %: 3,8–7,1 % y 2,7–5,9 %), con p < 0,001. Rendimiento útil sin diferencia (p > 0,15).
+
+**Evidencias:** `data/raw/campana_rapido_*`, `data/processed/`, `docs/figuras/`, `docs/evidencias/s12_resumen_rapido.txt`, etiqueta `v1.1-campana-1000`
+
 ## Compromisos de las próximas semanas
 
 Actividades planificadas; se registran como cumplidas solo cuando se realicen.
 
 | Semana | Fechas | Compromiso |
 |---|---|---|
-| 6 | 02/11/2026 – 06/11/2026 | Completar la campaña con el bloque a 100 kbit/s (360 corridas) y realizar las capturas con el analizador lógico (sin TLS y con TLS híbrido). |
-| 7 | 09/11/2026 – 13/11/2026 | Análisis estadístico de la campaña: medias, intervalos de confianza, comparaciones híbrido vs. clásico y figuras (semana 11 del laboratorio). |
-| 8 | 16/11/2026 – 20/11/2026 | Cierre técnico (semana 12 del laboratorio) y redacción del Capítulo 2 (metodología y desarrollo). |
-| 9 | 23/11/2026 – 27/11/2026 | Redacción del Capítulo 3 (resultados y análisis) y revisión con el profesor guía y la tutora. |
+| 10 | 30/11/2026 – 04/12/2026 | Redacción del Capítulo 3 con los resultados de N = 1 000 y revisión con el profesor guía y la tutora. |

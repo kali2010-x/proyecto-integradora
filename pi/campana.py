@@ -84,6 +84,9 @@ def main():
         time.sleep(a.reposo); meta["reposo_ini"].append(time.monotonic_ns())
         with open(ruta_runs, "w") as fr:
             for k, (g, tam, rep) in enumerate(plan, 1):
+                if logger.poll() is not None:     # sin potencia, las corridas siguientes no tendrían energía
+                    raise RuntimeError(f"el registrador del INA219 se detuvo antes de la corrida {k}; "
+                                       "la tanda queda incompleta y debe repetirse")
                 est = sistema.estado(None if a.sim else a.bus)
                 while est["temp_c"] is not None and est["temp_c"] > a.temp_max:
                     print(f"  temperatura {est['temp_c']} °C > {a.temp_max}: esperando..."); time.sleep(10)
@@ -96,7 +99,10 @@ def main():
                       f"err='{r['error']}' esp_estado={r.get('esp_estado')}")
                 time.sleep(a.pausa)
         print(f"Reposo final {a.reposo:.0f} s ..."); meta["reposo_fin"] = [time.monotonic_ns()]
-        time.sleep(a.reposo); meta["reposo_fin"].append(time.monotonic_ns())
+        time.sleep(a.reposo)
+        if logger.poll() is not None:
+            raise RuntimeError("el registrador del INA219 se detuvo durante el reposo final")
+        meta["reposo_fin"].append(time.monotonic_ns())
     finally:
         logger.send_signal(signal.SIGINT); logger.wait(timeout=10)
         meta["estado_fin"] = sistema.estado(None if a.sim else a.bus)

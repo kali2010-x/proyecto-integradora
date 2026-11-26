@@ -1,0 +1,27 @@
+OpenSSL: OpenSSL 3.5.7 9 Jun 2026
+{
+  "run_id": 1,
+  "grupo": "sin_tls",
+  "msg_bytes": 64,
+  "n_msgs": 10,
+  "bulk_bytes": 4096,
+  "error": "",
+  "t_corrida_ini_ns": 48610504024059,
+  "esp_estado": 0,
+  "esp_t_hs_us": 0,
+  "esp_rtt_media_us": 48572,
+  "esp_rtt_max_us": 48616,
+  "esp_bulk_us": 0,
+  "esp_heap_usado_hs": 0,
+  "esp_stack_libre": 0,
+  "esp_heap_libre": 0,
+  "t_corrida_fin_ns": 48611063033769,
+  "enl_intercambios": 23,
+  "enl_bytes_bus": 5888,
+  "enl_payload_tx": 652,
+  "enl_payload_rx": 640,
+  "enl_errores_crc": 0,
+  "enl_timeouts_ready": 0,
+  "enl_errores_io": 0,
+  "enl_retransmisiones": 0
+}

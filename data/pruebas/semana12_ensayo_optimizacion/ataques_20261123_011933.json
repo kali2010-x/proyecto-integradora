@@ -1,0 +1,31 @@
+{
+  "claro_sin_tls": {
+    "error_corrida": "",
+    "marcador_visible_en_bus": true,
+    "log": "/home/usuariok/proyecto-kyber-rpi/data/raw/tramas_sin_tls_20261123_011933.log"
+  },
+  "claro_con_tls": {
+    "error_corrida": "TimeoutError:handshake: tiempo agotado",
+    "marcador_visible_en_bus": false,
+    "log": "/home/usuariok/proyecto-kyber-rpi/data/raw/tramas_con_tls_20261123_011933.log"
+  },
+  "alterar_esp_a_pi": {
+    "modo": "alterar_esp_a_pi",
+    "servidor": "TimeoutError",
+    "esp32_estado": -3,
+    "rechazado": true
+  },
+  "alterar_pi_a_esp": {
+    "modo": "alterar_pi_a_esp",
+    "servidor": "TimeoutError",
+    "esp32_estado": -3,
+    "rechazado": true
+  },
+  "reinyectar": {
+    "modo": "reinyectar",
+    "servidor": "TimeoutError",
+    "esp32_estado": -3,
+    "rechazado": true
+  },
+  "CONCLUSION": "TODAS LAS PRUEBAS PASARON"
+}

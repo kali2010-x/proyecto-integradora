@@ -1126,8 +1126,6 @@ Turn on timer debugging (used when CPU cycles not available)
  *  #define HAVE_AES_ECB
  *  #define HAVE_AES_DIRECT
  */
- *  #define HAVE_AES_DIRECT
- */
 
 /* ======================================================================
  * PROYECTO INTEGRADORA (TLS 1.3 híbrido sobre I2C) - ajustes agregados
@@ -1148,3 +1146,9 @@ Turn on timer debugging (used when CPU cycles not available)
     #define HAVE_TLS_EXTENSIONS
 #endif
 /* ML-KEM se activa con menuconfig: CONFIG_ESP_WOLFSSL_ENABLE_MLKEM=y (ver sdkconfig.defaults) */
+/* Grupo híbrido X25519MLKEM768: wolfSSL 5.9 solo lo ofrece con WOLFSSL_PQC_HYBRIDS. El ./configure de
+ * wolfSSL lo define por defecto, pero la plantilla de ESP-IDF no; sin él, wolfSSL_set_groups() rechaza el
+ * grupo 0x11EC y el reporte del ESP32 llega con estado -5. */
+#if defined(WOLFSSL_HAVE_MLKEM) && !defined(WOLFSSL_PQC_HYBRIDS)
+    #define WOLFSSL_PQC_HYBRIDS
+#endif
