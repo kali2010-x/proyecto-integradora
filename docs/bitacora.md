@@ -273,11 +273,24 @@ Organizada por las semanas de la plataforma de Materia Integradora. Cada activid
 
 **Evidencias:** `data/raw/campana_estandar_*`, `docs/evidencias/s12_resumen_estandar.txt`
 
+### 9.3 Campaña definitiva: bloque a 400 kbit/s y análisis de las 12 000 corridas
+
+| Campo | Valor |
+|---|---|
+| Inicio | 24/11/2026 |
+| Cumplimiento | 26/11/2026 |
+| Responsable | Kevin Pérez |
+| Tipo de actividad | Laboratorio y análisis |
+| Adjunto | (pendiente) |
+
+**Descripción:** Se ejecutaron 10 tandas de 600 corridas a 400 kbit/s, después de un ensayo previo de 12 corridas sin error. En la tanda 7 (semilla 48) el registrador del INA219 se detuvo a los 19 minutos por un error de E/S del bus I²C 1, y 406 corridas quedaron sin medición de potencia. Se corrigió el código: el registrador ahora reintenta las lecturas, la campaña se detiene si el registrador falla, el script de tandas comprueba que la potencia llegue al final de cada tanda y el análisis deja vacía la energía sin registro. La tanda 7 se apartó en `data/descartados/` y se repitió con la misma semilla, sin lecturas fallidas. Resultado: 12 000 de 12 000 corridas válidas, sin retransmisiones y con 4 errores de CRC recuperados. Sobrecosto del híbrido en el tiempo del handshake: +25,9 % a 100 kbit/s y +7,8 % a 400 kbit/s. ClientHello: +657,8 % (180 frente a 1 364 bytes). Memoria pico: +3,8 %. Energía por handshake: +5,4 % y +4,4 % en la media (IC 95 %: 3,8–7,1 % y 2,7–5,9 %), con p < 0,001. Rendimiento útil sin diferencia (p > 0,15).
+
+**Evidencias:** `data/raw/campana_rapido_*`, `data/processed/`, `docs/figuras/`, `docs/evidencias/s12_resumen_rapido.txt`, etiqueta `v1.1-campana-1000`
+
 ## Compromisos de las próximas semanas
 
 Actividades planificadas; se registran como cumplidas solo cuando se realicen.
 
 | Semana | Fechas | Compromiso |
 |---|---|---|
-| 9 | 24/11/2026 – 27/11/2026 | Bloque a 400 kbit/s de la campaña definitiva (6 000 corridas), análisis de las 12 000 corridas con `analisis.py` y subida al repositorio. |
 | 10 | 30/11/2026 – 04/12/2026 | Redacción del Capítulo 3 con los resultados de N = 1 000 y revisión con el profesor guía y la tutora. |

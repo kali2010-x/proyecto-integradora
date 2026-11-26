@@ -165,3 +165,20 @@ El CRC de la capa de enlace protege contra errores accidentales del bus, pero un
   `data/descartados/` y se repitió completa con la misma semilla (51) el 24/11 (`campana_estandar_20261124_075236_*`).
   Las tandas 1 a 9 no se afectaron. Después del corte se volvió a fijar el gobernador en performance y se lanzó dentro de tmux.
 - Resultado: 6 000/6 000 corridas correctas, 0 retransmisiones, 3 errores de CRC recuperados por el enlace.
+
+### Campaña definitiva: bloque rápido (400 kbit/s) y análisis
+- 24/11/2026 21:26 a 25/11/2026: 10 tandas de 600 corridas (semillas 42 a 51), firmware `-O2`. Ensayo previo de 12 corridas
+  a 400 kbit/s sin error (handshake 1,70 / 1,83 s).
+- Hallazgo: en la tanda 7 (semilla 48, `campana_rapido_20261125_031431`) el registrador del INA219 terminó a los 1 147 s por
+  un error de E/S del bus I²C 1; 406 corridas quedaron sin potencia y el análisis les asignaba ≈ -5 mJ como válidas.
+  **Decisión:** apartar la tanda en `data/descartados/` y repetirla con la misma semilla (26/11, `campana_rapido_20261126_055154`,
+  0 lecturas fallidas); y corregir el código para que no vuelva a pasar inadvertido: `potencia.py` reintenta lecturas,
+  `campana.py` se detiene si el registrador muere, `campana_tandas.sh` exige potencia hasta el final del reposo y
+  `analisis.py` deja vacía la energía sin registro.
+- Resultado final (etiqueta `v1.1-campana-1000`): 12 000/12 000 corridas válidas, 0 retransmisiones, 4 errores de CRC
+  recuperados.
+- **Error alcanzado (semiamplitud del IC 95 % / media):** tiempo del handshake, bytes y rendimiento < ±0,01 %. Energía por
+  handshake: ±0,9 % a ±1,2 % por grupo y bloque (n = 3 000) y ±1,5 % a ±2,3 % por configuración (n = 1 000). La energía
+  varió más que en el piloto (CV 24-37 % frente a 12-29 %), sobre todo entre tandas, por la actividad de fondo de la
+  Raspberry a lo largo de las horas; como el orden es aleatorio dentro de cada tanda, la comparación híbrido-clásico no se
+  sesga. El objetivo de ±1 % se cumple en el tiempo y los bytes y, para la energía, a nivel de grupo y bloque.
