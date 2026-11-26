@@ -55,6 +55,8 @@ def energia_mJ(pot, t0, t1, p_rep):
     if pd.isna(t0) or pd.isna(t1) or t1 <= t0:
         return np.nan
     t = pot.t_ns.to_numpy(np.int64); p = pot.p_mW.to_numpy(float)
+    if t0 < t[0] or t1 > t[-1]:          # ventana fuera del registro (registrador detenido): sin energía
+        return np.nan
     dentro = (t > t0) & (t < t1)
     tt = np.concatenate([[t0], t[dentro], [t1]]).astype(float)
     pp = np.interp(tt, t.astype(float), p)
@@ -86,6 +88,9 @@ def procesar(rutas_meta):
         runs["energia_corrida_mJ"] = [energia_mJ(pot, a, b, p_rep) for a, b in zip(runs.t_corrida_ini_ns, runs.t_corrida_fin_ns)]
         runs["muestras_en_hs"] = [int(((pot.t_ns >= a) & (pot.t_ns <= b)).sum()) if not pd.isna(a) else 0
                                   for a, b in zip(runs.get("t_hs_ini_ns"), runs.get("t_hs_fin_ns"))]
+        sin_pot = int(runs["energia_hs_mJ"].isna().sum())
+        if sin_pot:
+            print(f"AVISO: {os.path.basename(ruta)}: {sin_pot} corridas sin registro de potencia (energía vacía)")
         filas.append(runs)
     df = pd.concat(filas, ignore_index=True)
     df["valida"] = (df.error.fillna("") == "") & (df.esp_estado.astype(str) == "0") & \

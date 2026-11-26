@@ -18,3 +18,5 @@ certs/*.key
 # Datos de pruebas y pilotos: también pesados sin comprimir
 data/pruebas/**/*_potencia.csv
 sim/prueba_enlace
+# Tandas apartadas: solo se versiona la potencia comprimida
+data/descartados/*_potencia.csv

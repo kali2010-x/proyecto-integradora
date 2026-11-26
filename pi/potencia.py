@@ -55,8 +55,20 @@ def registrar(ruta, simular=False, duracion_s=None):
     with open(ruta, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["t_ns", "v_V", "i_mA", "p_mW"])
+        errores, seguidos = 0, 0
         while not detener["v"]:
-            w.writerow(m.leer())
+            try:
+                w.writerow(m.leer())
+            except OSError:
+                # Error transitorio del bus I2C 1 (p. ej. Errno 121/5): antes terminaba el registrador y el
+                # resto de la tanda quedaba sin potencia. Se reintenta; solo se abandona si el INA219 no
+                # responde durante ~1 s seguido.
+                errores += 1; seguidos += 1
+                if seguidos > 500:
+                    raise
+                time.sleep(0.002)
+                continue
+            seguidos = 0
             n += 1
             ahora = time.monotonic()
             if ahora - ultimo_flush > 1:
@@ -64,7 +76,8 @@ def registrar(ruta, simular=False, duracion_s=None):
             if duracion_s and ahora - t_ini >= duracion_s:
                 break
     dt = time.monotonic() - t_ini
-    print(f"{n} muestras en {dt:.1f} s ({n/dt:.0f} muestras/s) -> {ruta}", file=sys.stderr)
+    print(f"{n} muestras en {dt:.1f} s ({n/dt:.0f} muestras/s), {errores} lecturas fallidas reintentadas -> {ruta}",
+          file=sys.stderr)
 
 
 if __name__ == "__main__":
