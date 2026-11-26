@@ -20,3 +20,8 @@ data/pruebas/**/*_potencia.csv
 sim/prueba_enlace
 # Tandas apartadas: solo se versiona la potencia comprimida
 data/descartados/*_potencia.csv
+
+# Copias sin comprimir en subcarpetas de data/raw y archivos antiguos (no se versionan)
+data/raw/**/*_potencia.csv
+data/raw/**/reposo_*.csv
+data/raw/antiguos/
